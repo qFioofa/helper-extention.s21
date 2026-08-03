@@ -1,0 +1,13 @@
+---
+Language: JavaScript
+BasedOnStyle: WebKit
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+ColumnLimit: 100
+DerivePointerAlignment: false
+PointerAlignment: Left
+SortIncludes: false
+AlignTrailingComments: true
+BreakBeforeBinaryOperators: None
+...
