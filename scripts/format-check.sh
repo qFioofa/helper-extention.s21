@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
+cd "$ROOT" || exit 1
 
 echo "checking web files with prettier"
 npx prettier --check .
