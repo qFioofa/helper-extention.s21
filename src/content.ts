@@ -1,3 +1,10 @@
+import { S21Client } from "@s21/api";
+
+// В контексте страницы платформы запросы идут same-origin с сессионными куками.
+export const s21Client = new S21Client({
+	baseUrl: location.origin,
+});
+
 const container = document.createElement("div");
 container.id = "s21-helper-demo";
 container.textContent = "Hello from s21 helper";
