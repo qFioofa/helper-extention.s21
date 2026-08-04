@@ -19,7 +19,7 @@
 			"run_at": "document_idle"
 		}
 	],
-	"permissions": ["storage", "tabs", "https://*.21-school.ru/*"],
+	"permissions": ["storage", "tabs", "https://platform.21-school.ru/*"],
 	"icons": {
 		"16": "icons/icon16.png",
 		"48": "icons/icon48.png",

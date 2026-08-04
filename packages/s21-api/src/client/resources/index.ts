@@ -1,4 +1,9 @@
-export { AuthResource } from "./Auth";
-export { ProfileResource } from "./Profile";
-export { ProjectsResource } from "./Projects";
-export { PeerReviewsResource } from "./PeerReviews";
+export { CampusResource } from "./Campus";
+export { ClusterResource } from "./Cluster";
+export { CoalitionResource } from "./Coalition";
+export { CourseResource } from "./Course";
+export { EventResource } from "./Event";
+export { GraphResource } from "./Graph";
+export { ParticipantResource } from "./Participant";
+export { ProjectResource } from "./Project";
+export { SaleResource } from "./Sale";

@@ -15,7 +15,3 @@ export class S21HttpError extends S21ApiError {
 		this.name = "S21HttpError";
 	}
 }
-
-export function notImplemented(feature: string): never {
-	throw new S21ApiError(`S21 API: "${feature}" is not implemented yet`);
-}

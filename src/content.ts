@@ -1,8 +1,8 @@
-import { S21Client } from "@s21/api";
+import { S21Client, S21_API_PATH_PREFIX } from "@s21/api";
 
 // В контексте страницы платформы запросы идут same-origin с сессионными куками.
 export const s21Client = new S21Client({
-	baseUrl: location.origin,
+	baseUrl: `${location.origin}${S21_API_PATH_PREFIX}`,
 });
 
 const container = document.createElement("div");

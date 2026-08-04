@@ -2,8 +2,10 @@ import { S21HttpError } from "../errors";
 
 export type QueryValue = string | number | boolean | readonly QueryValue[];
 
+export type QueryObject = Record<string, QueryValue | undefined>;
+
 export interface RequestOptions {
-	query?: Record<string, QueryValue>;
+	query?: QueryObject;
 	body?: unknown;
 	headers?: Record<string, string>;
 }
@@ -83,7 +85,7 @@ export class HttpTransport {
 		return body as T;
 	}
 
-	private buildUrl(path: string, query?: RequestOptions["query"]): string {
+	private buildUrl(path: string, query?: QueryObject): string {
 		const url = new URL(`${this.baseUrl}${path}`);
 		if (query) {
 			for (const [key, value] of Object.entries(query)) {
