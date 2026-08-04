@@ -13,8 +13,8 @@ preflight node npm python3 || exit 1
 
 timer_start "release (total)"
 
-report_reset
 mkdir -p "$DEST"
+report_reset
 
 ensure_build || {
 	error "build failed; aborting release"

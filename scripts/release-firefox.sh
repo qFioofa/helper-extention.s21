@@ -32,34 +32,49 @@ else
 	report_warn "web-ext not found; firefox lint skipped"
 fi
 
-# ---- sign the extension (unless SKIP_SIGN=1) -------------------------------
+# ---- sign the extension (unless SKIP_SIGN=1 or declined) --------------------
 XPI=""
+sign=""
 if [ "${SKIP_SIGN:-0}" = "1" ]; then
+	sign="no"
 	warn "SKIP_SIGN=1 - the extension will NOT be signed"
 	report_warn "SKIP_SIGN=1 - firefox extension not signed"
 else
-	step "firefox" "Signing the extension with Mozilla"
-	if require web-ext "install with: npm i -g web-ext"; then
-		local_api_key="${FIREFOX_API_KEY:-}"
-		local_api_secret="${FIREFOX_API_SECRET:-}"
-		if [ -z "$local_api_key" ]; then
-			printf "${C_BOLD}Enter your Mozilla API credentials.${C_RESET}\n"
+	local_api_key="${FIREFOX_API_KEY:-}"
+	local_api_secret="${FIREFOX_API_SECRET:-}"
+	if [ -n "$local_api_key" ]; then
+		sign="yes"
+	else
+		printf "${C_BOLD}No Mozilla API credentials found (FIREFOX_API_KEY/FIREFOX_API_SECRET).${C_RESET}\n"
+		read -rp "Sign the extension with Mozilla now? [y/N] " sign
+		sign="$(printf '%s' "${sign:-no}" | tr '[:upper:]' '[:lower:]')"
+		if [ "$sign" = "y" ]; then
+			sign="yes"
 			printf "Get them at: ${C_CYAN}https://addons.mozilla.org/en-US/developers/addon/api/key/${C_RESET}\n"
 			read -rp "  API key (JWT issuer)    : " local_api_key
 			read -rsp "  API secret (JWT secret): " local_api_secret
 			printf "\n"
 		fi
-		web-ext sign --source-dir "$STAGE" \
-			--artifacts-dir "$DEST/firefox" \
-			--api-key "$local_api_key" \
-			--api-secret "$local_api_secret"
-		XPI="$(ls -t "$DEST/firefox"/*.xpi 2>/dev/null | head -1)"
-		if [ -n "$XPI" ]; then
-			ok "signed extension produced"
-		else
-			warn "signing did not produce an .xpi (check the logs above)"
-			report_warn "firefox signing produced no .xpi"
+	fi
+
+	if [ "$sign" = "yes" ]; then
+		step "firefox" "Signing the extension with Mozilla"
+		if require web-ext "install with: npm i -g web-ext"; then
+			web-ext sign --source-dir "$STAGE" \
+				--artifacts-dir "$DEST/firefox" \
+				--api-key "$local_api_key" \
+				--api-secret "$local_api_secret"
+			XPI="$(ls -t "$DEST/firefox"/*.xpi 2>/dev/null | head -1)"
+			if [ -n "$XPI" ]; then
+				ok "signed extension produced"
+			else
+				warn "signing did not produce an .xpi (check the logs above)"
+				report_warn "firefox signing produced no .xpi"
+			fi
 		fi
+	else
+		warn "signing skipped; the extension will NOT be signed"
+		report_warn "firefox signing skipped by user"
 	fi
 fi
 
