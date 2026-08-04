@@ -6,14 +6,19 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build && BUILD_ENTRY=background vite build --config vite.content.config.ts && BUILD_ENTRY=content vite build --config vite.content.config.ts",
+		"build:full": "bash scripts/build.sh",
 		"preview": "vite preview",
+		"clean": "rm -rf dist .release",
 		"format": "bash scripts/format.sh",
 		"format:check": "bash scripts/format-check.sh",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"release": "bash scripts/release.sh",
+		"release:clean": "npm run clean && npm run release",
 		"release:chrome": "bash scripts/release-chrome.sh",
 		"release:firefox": "bash scripts/release-firefox.sh",
-		"release:safari": "bash scripts/release-safari.sh"
+		"release:safari": "bash scripts/release-safari.sh",
+		"release:lint": "bash scripts/lint.sh",
+		"release:report": "cat release/report.txt"
 	},
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",

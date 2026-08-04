@@ -16,7 +16,10 @@ def main() -> None:
 	path, gecko_id = sys.argv[1], sys.argv[2]
 	with open(path) as f:
 		manifest = json.load(f)
-	manifest["browser_specific_settings"] = {"gecko": {"id": gecko_id}}
+	bss = manifest.setdefault("browser_specific_settings", {})
+	gecko = bss.setdefault("gecko", {})
+	gecko["id"] = gecko_id
+	manifest["browser_specific_settings"] = bss
 	with open(path, "w") as f:
 		json.dump(manifest, f, indent=2)
 		f.write("\n")

@@ -1,12 +1,16 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "Helper Extension S21",
 	"version": "0.0.1",
-	"description": "Simple demo extension for s21 built with Svelte, Vite and Tailwind CSS",
-	"browser_action": {
+	"description": "Вспомогательное расширение для реализации полезных дополнительных функций на платформе s21.",
+	"action": {
 		"default_popup": "index.html",
 		"default_title": "Helper Extension S21",
-		"default_icon": "icons/icon16.png"
+		"default_icon": {
+			"16": "icons/icon16.png",
+			"48": "icons/icon48.png",
+			"128": "icons/icon128.png"
+		}
 	},
 	"background": {
 		"scripts": ["background.js"],
@@ -14,12 +18,22 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["<all_urls>"],
+			"matches": ["https://platform.21-school.ru/*"],
 			"js": ["content.js"],
 			"run_at": "document_idle"
 		}
 	],
 	"permissions": ["storage", "tabs"],
+	"host_permissions": ["https://platform.21-school.ru/*"],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "addon@example.com",
+			"strict_min_version": "109.0",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
+		}
+	},
 	"icons": {
 		"16": "icons/icon16.png",
 		"48": "icons/icon48.png",
