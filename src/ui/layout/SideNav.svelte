@@ -3,7 +3,7 @@
 	import { activeCategoryId, selectCategory } from "../../core/stores/category.svelte";
 	import Icon from "../shared/Icon.svelte";
 
-	let collapsed = $state(false);
+	let { collapsed = $bindable(false) }: { collapsed?: boolean } = $props();
 </script>
 
 <nav

@@ -6,6 +6,8 @@
 	import ContentArea from "./ui/layout/ContentArea.svelte";
 	import Footer from "./ui/layout/Footer.svelte";
 
+	let navCollapsed = $state(false);
+
 	onMount(() => {
 		applyTheme();
 	});
@@ -16,7 +18,14 @@
 >
 	<Header />
 	<div class="relative flex min-h-0 flex-1 overflow-hidden">
-		<SideNav />
+		<SideNav bind:collapsed={navCollapsed} />
+		{#if !navCollapsed}
+			<button
+				class="absolute inset-0 z-10 cursor-default"
+				aria-label="Закрыть панель категорий"
+				onclick={() => (navCollapsed = true)}
+			></button>
+		{/if}
 		<ContentArea />
 	</div>
 	<Footer />
