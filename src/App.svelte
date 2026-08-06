@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { applyTheme } from "./core/stores/theme.svelte";
+	import { initAuthStore } from "./core/stores/auth.svelte";
+	import { initLogger } from "./core/logger.svelte";
 	import Header from "./ui/layout/Header.svelte";
 	import SideNav from "./ui/layout/SideNav.svelte";
 	import ContentArea from "./ui/layout/ContentArea.svelte";
@@ -10,6 +12,8 @@
 
 	onMount(() => {
 		applyTheme();
+		initAuthStore();
+		initLogger();
 	});
 </script>
 
