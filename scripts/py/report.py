@@ -17,6 +17,7 @@ where kind is "file" (default) or "dir".
 The targets TSV has one entry per line:     name<TAB>status
 where status is "success", "failed" or "skipped".
 """
+
 import argparse
 import hashlib
 import os
@@ -127,7 +128,9 @@ def render(args) -> str:
     out.append(SEP)
 
     status = "SUCCESS" if args.errors == 0 else "FAILED"
-    out.append(f"  Status     : {status}   errors={args.errors} warnings={args.warnings}")
+    out.append(
+        f"  Status     : {status}   errors={args.errors} warnings={args.warnings}"
+    )
 
     targets = load_targets(args.targets_file)
     if targets:
@@ -173,19 +176,25 @@ def render(args) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Render build report")
     parser.add_argument("--artifacts", default="", help="TSV file with artifacts")
-    parser.add_argument("--targets-file", default="", help="TSV file with target statuses")
+    parser.add_argument(
+        "--targets-file", default="", help="TSV file with target statuses"
+    )
     parser.add_argument("--project", default="", help="project name@version")
     parser.add_argument("--date", default="", help="build date")
     parser.add_argument("--git", default="", help="git ref info")
     parser.add_argument("--node", default="", help="node version")
     parser.add_argument("--npm", default="", help="npm version")
     parser.add_argument("--elapsed", default="", help="total build time")
-    parser.add_argument("--targets", default="", help="comma separated targets (legacy)")
+    parser.add_argument(
+        "--targets", default="", help="comma separated targets (legacy)"
+    )
     parser.add_argument("--warnings", type=int, default=0)
     parser.add_argument("--errors", type=int, default=0)
     parser.add_argument("--warnings-log", default="", help="file with warning lines")
     parser.add_argument("--errors-log", default="", help="file with error lines")
-    parser.add_argument("--output", default="", help="also write the report to this file")
+    parser.add_argument(
+        "--output", default="", help="also write the report to this file"
+    )
     args = parser.parse_args()
 
     report = render(args)
