@@ -25,6 +25,12 @@
 	],
 	"permissions": ["storage", "tabs"],
 	"host_permissions": ["https://platform.21-school.ru/*"],
+	"web_accessible_resources": [
+		{
+			"resources": ["icons/icon16.png", "icons/icon48.png", "icons/icon128.png"],
+			"matches": ["https://platform.21-school.ru/*"]
+		}
+	],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "addon@example.com",

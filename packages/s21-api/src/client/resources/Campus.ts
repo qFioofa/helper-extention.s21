@@ -15,13 +15,20 @@ export class CampusResource extends Resource {
 	}
 
 	/** Returns participant logins of the campus. */
-	getParticipants(campusId: string, params?: CampusParticipantsParams): Promise<ParticipantLoginsV1DTO> {
-		return this.http.get<ParticipantLoginsV1DTO>(`/v1/campuses/${campusId}/participants`, { query: params });
+	getParticipants(
+		campusId: string,
+		params?: CampusParticipantsParams,
+	): Promise<ParticipantLoginsV1DTO> {
+		return this.http.get<ParticipantLoginsV1DTO>(`/v1/campuses/${campusId}/participants`, {
+			query: params,
+		});
 	}
 
 	/** Returns coalitions of the campus. */
 	getCoalitions(campusId: string, params?: CampusCoalitionsParams): Promise<CoalitionsV1DTO> {
-		return this.http.get<CoalitionsV1DTO>(`/v1/campuses/${campusId}/coalitions`, { query: params });
+		return this.http.get<CoalitionsV1DTO>(`/v1/campuses/${campusId}/coalitions`, {
+			query: params,
+		});
 	}
 
 	/** Returns clusters of the campus. */

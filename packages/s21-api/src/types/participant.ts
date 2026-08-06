@@ -1,4 +1,5 @@
-export type ParticipantStatus = "ACTIVE" | "TEMPORARY_BLOCKING" | "EXPELLED" | "BLOCKED" | "FROZEN" | "STUDY_COMPLETED";
+export type ParticipantStatus =
+	"ACTIVE" | "TEMPORARY_BLOCKING" | "EXPELLED" | "BLOCKED" | "FROZEN" | "STUDY_COMPLETED";
 export type CourseStatus = "ASSIGNED" | "REGISTERED" | "IN_PROGRESS" | "ACCEPTED" | "FAILED";
 
 /** Participant Campus */
