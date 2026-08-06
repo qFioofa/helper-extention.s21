@@ -1,4 +1,5 @@
-export type ProjectStatus = "ASSIGNED" | "REGISTERED" | "IN_PROGRESS" | "IN_REVIEWS" | "ACCEPTED" | "FAILED";
+export type ProjectStatus =
+	"ASSIGNED" | "REGISTERED" | "IN_PROGRESS" | "IN_REVIEWS" | "ACCEPTED" | "FAILED";
 export type ProjectType = "INDIVIDUAL" | "GROUP" | "EXAM" | "EXAM_TEST" | "INTERNSHIP";
 export type LogicalOperator = "OR" | "AND";
 

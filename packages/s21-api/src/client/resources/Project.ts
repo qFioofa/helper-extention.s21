@@ -8,7 +8,12 @@ export class ProjectResource extends Resource {
 	}
 
 	/** Returns participant logins of the project. */
-	getParticipants(projectId: number, params?: ProjectParticipantsParams): Promise<ParticipantLoginsV1DTO> {
-		return this.http.get<ParticipantLoginsV1DTO>(`/v1/projects/${projectId}/participants`, { query: params });
+	getParticipants(
+		projectId: number,
+		params?: ProjectParticipantsParams,
+	): Promise<ParticipantLoginsV1DTO> {
+		return this.http.get<ParticipantLoginsV1DTO>(`/v1/projects/${projectId}/participants`, {
+			query: params,
+		});
 	}
 }

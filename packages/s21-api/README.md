@@ -31,17 +31,17 @@ const graph = await client.graph.getGraph();
 
 ## Ресурсы и эндпоинты
 
-| Ресурс | Методы |
-| --- | --- |
-| `campus` | `getCampuses`, `getParticipants`, `getCoalitions`, `getClusters` |
-| `cluster` | `getMap` |
-| `coalition` | `getParticipants` |
-| `course` | `getById` |
-| `event` | `getEvents` |
-| `graph` | `getGraph` |
+| Ресурс        | Методы                                                                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `campus`      | `getCampuses`, `getParticipants`, `getCoalitions`, `getClusters`                                                                                                                           |
+| `cluster`     | `getMap`                                                                                                                                                                                   |
+| `coalition`   | `getParticipants`                                                                                                                                                                          |
+| `course`      | `getById`                                                                                                                                                                                  |
+| `event`       | `getEvents`                                                                                                                                                                                |
+| `graph`       | `getGraph`                                                                                                                                                                                 |
 | `participant` | `getByLogin`, `getWorkstation`, `getSkills`, `getProjects`, `getProject`, `getPoints`, `getLogtime`, `getFeedback`, `getXpHistory`, `getCourses`, `getCourse`, `getCoalition`, `getBadges` |
-| `project` | `getById`, `getParticipants` |
-| `sale` | `getSales` |
+| `project`     | `getById`, `getParticipants`                                                                                                                                                               |
+| `sale`        | `getSales`                                                                                                                                                                                 |
 
 ## Проверка
 

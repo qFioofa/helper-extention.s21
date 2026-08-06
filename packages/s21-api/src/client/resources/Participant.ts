@@ -35,13 +35,20 @@ export class ParticipantResource extends Resource {
 	}
 
 	/** Returns participant projects by login. */
-	getProjects(login: string, params?: ParticipantProjectsParams): Promise<ParticipantProjectsV1DTO> {
-		return this.http.get<ParticipantProjectsV1DTO>(`/v1/participants/${login}/projects`, { query: params });
+	getProjects(
+		login: string,
+		params?: ParticipantProjectsParams,
+	): Promise<ParticipantProjectsV1DTO> {
+		return this.http.get<ParticipantProjectsV1DTO>(`/v1/participants/${login}/projects`, {
+			query: params,
+		});
 	}
 
 	/** Returns participant project by login and project ID. */
 	getProject(login: string, projectId: number): Promise<ParticipantProjectV1DTO> {
-		return this.http.get<ParticipantProjectV1DTO>(`/v1/participants/${login}/projects/${projectId}`);
+		return this.http.get<ParticipantProjectV1DTO>(
+			`/v1/participants/${login}/projects/${projectId}`,
+		);
 	}
 
 	/** Returns participant points by login. */
@@ -60,18 +67,28 @@ export class ParticipantResource extends Resource {
 	}
 
 	/** Returns participant XP history by login. */
-	getXpHistory(login: string, params?: ParticipantXpHistoryParams): Promise<ParticipantXpHistoryV1DTO> {
-		return this.http.get<ParticipantXpHistoryV1DTO>(`/v1/participants/${login}/experience-history`, { query: params });
+	getXpHistory(
+		login: string,
+		params?: ParticipantXpHistoryParams,
+	): Promise<ParticipantXpHistoryV1DTO> {
+		return this.http.get<ParticipantXpHistoryV1DTO>(
+			`/v1/participants/${login}/experience-history`,
+			{ query: params },
+		);
 	}
 
 	/** Returns participant courses by login. */
 	getCourses(login: string, params?: ParticipantCoursesParams): Promise<ParticipantCoursesV1DTO> {
-		return this.http.get<ParticipantCoursesV1DTO>(`/v1/participants/${login}/courses`, { query: params });
+		return this.http.get<ParticipantCoursesV1DTO>(`/v1/participants/${login}/courses`, {
+			query: params,
+		});
 	}
 
 	/** Returns participant course by login and course ID. */
 	getCourse(login: string, courseId: number): Promise<ParticipantCourseV1DTO> {
-		return this.http.get<ParticipantCourseV1DTO>(`/v1/participants/${login}/courses/${courseId}`);
+		return this.http.get<ParticipantCourseV1DTO>(
+			`/v1/participants/${login}/courses/${courseId}`,
+		);
 	}
 
 	/** Returns participant coalition by login. */
