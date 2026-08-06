@@ -7,9 +7,9 @@
 </script>
 
 <nav
-	class="flex shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-200 bg-white p-2 transition-[width] duration-150 dark:border-slate-800 dark:bg-slate-900 {collapsed
+	class="absolute inset-y-0 left-0 z-20 flex flex-col gap-1 overflow-y-auto border-r border-slate-200 bg-white p-2 transition-[width,box-shadow] duration-150 dark:border-slate-800 dark:bg-slate-900 {collapsed
 		? 'w-12'
-		: 'w-44'}"
+		: 'w-44 shadow-2xl'}"
 >
 	{#each categories as cat (cat.id)}
 		<button

@@ -15,7 +15,7 @@
 	class="flex h-full w-full flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100"
 >
 	<Header />
-	<div class="flex min-h-0 flex-1">
+	<div class="relative flex min-h-0 flex-1 overflow-hidden">
 		<SideNav />
 		<ContentArea />
 	</div>

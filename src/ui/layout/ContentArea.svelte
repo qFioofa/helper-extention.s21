@@ -8,7 +8,7 @@
 	);
 </script>
 
-<main class="flex-1 overflow-y-auto p-3">
+<main class="flex-1 overflow-y-auto p-3 pl-12">
 	<h2 class="mb-3 text-sm font-bold">{activeCategory.title}</h2>
 	<div
 		class="grid gap-4"
