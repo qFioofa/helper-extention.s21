@@ -1,0 +1,30 @@
+# https://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Web / JavaScript / Prettier (tabs, width 4, line 100)
+[*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,svelte,json,jsonc,html,css,md,mdx,yml,yaml}]
+indent_style = tab
+tab_width = 4
+max_line_length = 100
+
+# Python / black (spaces, 4, line 88)
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# Shell / shfmt (tabs)
+[*.sh]
+indent_style = tab
+
+# Nix / nixfmt (spaces, 2) — nix files to be added later
+[*.nix]
+indent_style = space
+indent_size = 2
+max_line_length = 100
