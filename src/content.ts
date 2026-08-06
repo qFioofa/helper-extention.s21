@@ -105,3 +105,18 @@ function initWidget() {
 }
 
 initWidget();
+
+// Реальный запрос к API платформы (same-origin) — виден в Network страницы.
+// Пробивает сsession по-настоящему и подтверждает, что расширение ходит в API.
+if (location.hostname === "platform.21-school.ru") {
+	s21Client.campus
+		.getCampuses()
+		.then((data) => {
+			const count = Array.isArray(data) ? data.length : data ? 1 : 0;
+			console.log(`[s21-helper] api ok: campuses=${count}`, data);
+		})
+		.catch((err: unknown) => {
+			const status = (err as { status?: number })?.status;
+			console.log(`[s21-helper] api error: status=${status}`, err);
+		});
+}

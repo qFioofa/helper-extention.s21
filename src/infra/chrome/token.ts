@@ -1,5 +1,5 @@
 import { backgroundClient } from "../../api/client";
-import { logInfo, logWarn } from "../../core/logger.svelte";
+import { logDebug, logInfo, logWarn } from "../../core/logger.svelte";
 
 export const TOKEN_STORAGE_KEY = "s21-helper:token";
 
@@ -102,11 +102,11 @@ export async function loginWithPassword(
 		});
 		cached = await postToken(body);
 		await persist();
-		logInfo("password login ok", "auth");
+		logInfo("password login ok", "auth", { expires_at: cached.expires_at });
 		return { ok: true };
 	} catch (err) {
 		const message = err instanceof Error ? err.message : String(err);
-		logWarn(`password login failed: ${message}`, "auth");
+		logWarn("password login failed", "auth", { error: message, username });
 		return { ok: false, error: message };
 	}
 }
@@ -121,8 +121,11 @@ async function refreshToken(): Promise<boolean> {
 		});
 		cached = await postToken(body);
 		await persist();
+		logDebug("token refreshed", "auth", { expires_at: cached.expires_at });
 		return true;
-	} catch {
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		logWarn("refresh_token failed", "auth", { error: message });
 		cached = null;
 		await persist();
 		return false;

@@ -63,7 +63,7 @@ function probeNetwork(): Promise<AuthStatus> {
 		cachedStatus = status;
 		await persist(status);
 		await markProbeAt();
-		logInfo(`auth probe: ${status}`, "auth");
+		logInfo("auth probe", "auth", { status });
 		return status;
 	})();
 	return inFlight.finally(() => {
@@ -86,6 +86,7 @@ export function forceStatusCheck(): Promise<AuthStatus> {
 }
 
 export async function login(): Promise<AuthStatus> {
+	logInfo("login requested", "auth");
 	await ensurePlatformTab();
 	const status = await forceStatusCheck();
 	void pollUntilAuthorized();
@@ -93,6 +94,7 @@ export async function login(): Promise<AuthStatus> {
 }
 
 export async function logout(): Promise<AuthStatus> {
+	logInfo("logout requested", "auth");
 	await clearSessionCookies();
 	await clearStoredToken();
 	const status = await probeAuth();
