@@ -7,6 +7,9 @@ import EventsPanel from "../ui/islands/features/EventsPanel.svelte";
 import CampusPanel from "../ui/islands/features/CampusPanel.svelte";
 import SearchPanel from "../ui/islands/features/SearchPanel.svelte";
 import SettingsPanel from "../ui/islands/features/SettingsPanel.svelte";
+import AuthPanel from "../ui/islands/features/AuthPanel.svelte";
+import LogsPanel from "../ui/islands/features/LogsPanel.svelte";
+import CookiesPanel from "../ui/islands/features/CookiesPanel.svelte";
 
 export type IslandDef = {
 	id: string;
@@ -70,9 +73,24 @@ export const categories: CategoryDef[] = [
 		islands: [{ id: "search", title: "Поиск участника", component: SearchPanel }],
 	},
 	{
+		id: "logs",
+		title: "Логи",
+		icon: "terminal",
+		islands: [{ id: "logs", title: "Логи", component: LogsPanel }],
+	},
+	{
 		id: "settings",
 		title: "Настройки",
 		icon: "sliders",
 		islands: [{ id: "settings", title: "Настройки", component: SettingsPanel }],
+	},
+	{
+		id: "auth",
+		title: "Авторизация",
+		icon: "key",
+		islands: [
+			{ id: "auth", title: "Авторизация", component: AuthPanel },
+			{ id: "cookies", title: "Куки", component: CookiesPanel },
+		],
 	},
 ];

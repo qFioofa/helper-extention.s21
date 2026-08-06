@@ -3,6 +3,7 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build && BUILD_ENTRY=background vite build --config vite.content.config.ts && BUILD_ENTRY=content vite build --config vite.content.config.ts",
@@ -19,6 +20,9 @@
 		"release:safari": "bash scripts/release-safari.sh",
 		"release:lint": "bash scripts/lint.sh",
 		"release:report": "cat release/report.txt"
+	},
+	"dependencies": {
+		"@s21/api": "*"
 	},
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",

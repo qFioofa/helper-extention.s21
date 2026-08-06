@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { categories } from "../../core/registry";
 	import { activeCategoryId, selectCategory } from "../../core/stores/category.svelte";
+	import AuthStatusButton from "./AuthStatusButton.svelte";
 	import Icon from "../shared/Icon.svelte";
 
 	let { collapsed = $bindable(false) }: { collapsed?: boolean } = $props();
@@ -11,6 +12,8 @@
 		? 'w-12'
 		: 'w-44 shadow-2xl'}"
 >
+	<AuthStatusButton collapsed={collapsed} />
+	<div class="my-1 border-t border-slate-200 dark:border-slate-800"></div>
 	{#each categories as cat (cat.id)}
 		<button
 			onclick={() => selectCategory(cat.id)}
