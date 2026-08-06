@@ -1,0 +1,144 @@
+name: build
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    build:
+        name: Core build & typecheck
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Typecheck
+              run: npm run check
+
+            - name: "Build (vite: app + background + content)"
+              run: npm run build
+
+            - name: Upload dist
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dist
+                  path: dist
+                  if-no-files-found: error
+
+    chrome:
+        name: Chrome package
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Download dist
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: .
+
+            - name: Package Chrome
+              run: BUILD_DONE=1 bash scripts/release-chrome.sh
+
+            - name: Upload Chrome artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: chrome
+                  path: release/
+                  if-no-files-found: error
+
+    firefox:
+        name: Firefox package (unsigned)
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Download dist
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: .
+
+            - name: Package Firefox (no signing)
+              run: SKIP_SIGN=1 BUILD_DONE=1 bash scripts/release-firefox.sh
+
+            - name: Upload Firefox artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: firefox
+                  path: release/
+                  if-no-files-found: error
+
+    firefox-signed:
+        name: Firefox package (signed, API keys)
+        needs: build
+        runs-on: ubuntu-latest
+        if: secrets.FIREFOX_API_KEY != '' && secrets.FIREFOX_API_SECRET != ''
+        env:
+            FIREFOX_API_KEY: ${{ secrets.FIREFOX_API_KEY }}
+            FIREFOX_API_SECRET: ${{ secrets.FIREFOX_API_SECRET }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Download dist
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: .
+
+            - name: Install web-ext
+              run: npm install -g web-ext
+
+            - name: Package and sign Firefox
+              run: BUILD_DONE=1 bash scripts/release-firefox.sh
+
+            - name: Upload signed Firefox artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: firefox-signed
+                  path: release/
+                  if-no-files-found: error
+
+    safari:
+        name: Safari project (macOS/Xcode)
+        needs: build
+        runs-on: macos-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Download dist
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: .
+
+            - name: Build Safari project (skipped if converter unavailable)
+              run: |
+                  if ! xcrun --find safari-web-extension-converter >/dev/null 2>&1; then
+                      echo "Skipping Safari: safari-web-extension-converter not available in this environment"
+                      exit 0
+                  fi
+                  BUILD_DONE=1 bash scripts/release-safari.sh
+
+            - name: Upload Safari artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: safari
+                  path: release/
+                  if-no-files-found: error
