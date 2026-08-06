@@ -17,7 +17,7 @@
 	class="relative rounded-xl border border-slate-300 bg-white pt-2.5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
 >
 	<h3
-		class="absolute -top-2.5 left-3 rounded-md bg-white px-1.5 text-xs font-semibold text-blue-600 dark:bg-slate-900 dark:text-blue-400"
+		class="absolute -top-2.5 left-3 max-w-[calc(100%-3.5rem)] truncate rounded-md bg-white px-1.5 text-xs font-semibold text-blue-600 dark:bg-slate-900 dark:text-blue-400"
 	>
 		{island.title}
 	</h3>
@@ -28,7 +28,7 @@
 
 	<button
 		onclick={refresh}
-		class="absolute right-2 top-2 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+		class="absolute -top-2.5 right-2 rounded-lg bg-white p-1 text-slate-400 shadow-sm hover:bg-slate-100 hover:text-slate-600 dark:bg-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200"
 		title="Обновить"
 	>
 		<Icon name="refresh" size={14} class={refreshing ? "animate-spin" : ""} />
