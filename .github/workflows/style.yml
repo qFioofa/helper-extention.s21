@@ -1,0 +1,34 @@
+name: style
+
+on:
+    push:
+        branches: [develop]
+    pull_request:
+
+jobs:
+    style:
+        name: Code style checks
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Install shfmt
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y shfmt
+
+            - name: Install black
+              run: python3 -m pip install black
+
+            - name: Run style checks (prettier, shfmt, black)
+              run: npm run format:check
