@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { S21_PLATFORM_ORIGIN } from "@s21/api";
+	import { S21_PLATFORM_ORIGIN, S21_PLATFORM_ROUTES } from "@s21/api";
 
 	let {
 		projectId,
@@ -11,7 +11,7 @@
 </script>
 
 <a
-	href={`${S21_PLATFORM_ORIGIN}/project/${projectId}`}
+	href={`${S21_PLATFORM_ORIGIN}${S21_PLATFORM_ROUTES.project(projectId)}`}
 	target="_blank"
 	rel="noopener noreferrer"
 	class="truncate text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"

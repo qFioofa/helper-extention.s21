@@ -194,7 +194,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 			})();
 			return true;
 		}
-		case "api:participant:full": {
+case "api:participant:full": {
 			const login = message?.login;
 			const run = (target: string) =>
 				getAccessToken()
@@ -215,6 +215,52 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 					void rememberUsername(name);
 					run(name);
 				})
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:campus:list": {
+			getAccessToken()
+				.then(() => backgroundClient.campus.getCampuses().then((data) => ({ data })))
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:campus:clusters": {
+			const campusId = message?.campusId;
+			if (typeof campusId !== "string" || !campusId.trim()) {
+				sendResponse({ error: { message: "campusId required" } });
+				return false;
+			}
+			getAccessToken()
+				.then(() =>
+					backgroundClient.campus.getClusters(campusId.trim()).then((data) => ({ data })),
+				)
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:sales": {
+			getAccessToken()
+				.then(() => backgroundClient.sale.getSales().then((data) => ({ data })))
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:events": {
+			const from = message?.from;
+			const to = message?.to;
+			const limit = message?.limit;
+			getAccessToken()
+				.then(() =>
+					backgroundClient.event
+						.getEvents({
+							from: typeof from === "string" ? from : new Date().toISOString(),
+							to: typeof to === "string" ? to : new Date(Date.now() + 2592e6).toISOString(),
+							limit: typeof limit === "number" ? limit : 20,
+						})
+						.then((data) => ({ data })),
+				)
+				.then((r) => sendResponse(r))
 				.catch((err) => sendResponse({ error: errPayload(err) }));
 			return true;
 		}

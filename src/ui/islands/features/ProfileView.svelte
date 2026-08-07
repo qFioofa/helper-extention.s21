@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ParticipantProjectV1DTO } from "@s21/api";
+	import { S21_PLATFORM_ORIGIN, S21_PLATFORM_ROUTES } from "@s21/api";
 	import type { FullProfile } from "../../../api/peer";
 	import ProjectLink from "../../shared/ProjectLink.svelte";
 
@@ -37,7 +38,15 @@
 			{p.login[0]?.toUpperCase() ?? "?"}
 		</div>
 		<div class="min-w-0 flex-1">
-			<p class="truncate text-sm font-bold">{p.login}</p>
+			<a
+				href={`${S21_PLATFORM_ORIGIN}${S21_PLATFORM_ROUTES.user(p.login)}`}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="truncate text-sm font-bold text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
+				title="Открыть профиль на платформе"
+			>
+				{p.login}
+			</a>
 			<p class="truncate text-xs text-slate-500 dark:text-slate-400">
 				{p.parallelName ? `Волна ${p.parallelName}` : ""}
 				{p.className ? `${p.parallelName ? " · " : ""}${p.className}` : ""}</p>
