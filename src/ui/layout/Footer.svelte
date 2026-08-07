@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { auth, initAuthStore } from "../../core/stores/auth.svelte";
+	import { version } from "../../../package.json";
 
 	const STATUS_LABEL = {
 		authorized: "API: авторизован",
@@ -28,5 +29,5 @@
 		<span class="h-1.5 w-1.5 rounded-full {STATUS_DOT[auth.status]}"></span>
 		{STATUS_LABEL[auth.status]}
 	</span>
-	<span>v0.0.1 · прототип layout</span>
+	<span>v{version}</span>
 </footer>
