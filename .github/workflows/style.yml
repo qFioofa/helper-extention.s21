@@ -2,7 +2,7 @@ name: style
 
 on:
     push:
-        branches: [develop]
+        branches: [main]
     pull_request:
 
 jobs:
@@ -27,8 +27,5 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y shfmt
 
-            - name: Install black
-              run: python3 -m pip install black
-
-            - name: Run style checks (prettier, shfmt, black)
+            - name: Run style checks (prettier, shfmt)
               run: npm run format:check

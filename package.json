@@ -1,41 +1,51 @@
 {
-	"name": "helper-extension-s21",
-	"private": true,
-	"version": "0.0.1",
+	"name": "@s21/api",
+	"version": "0.1.0",
+	"description": "API-клиент для платформы S21 (School 21)",
+	"license": "MIT",
 	"type": "module",
-	"workspaces": ["packages/*"],
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build && BUILD_ENTRY=background vite build --config vite.content.config.ts && BUILD_ENTRY=content vite build --config vite.content.config.ts",
-		"build:full": "bash scripts/build.sh",
-		"preview": "vite preview",
-		"clean": "rm -rf dist .release",
-		"format": "bash scripts/format.sh",
-		"format:check": "bash scripts/format-check.sh",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"release": "bash scripts/release.sh",
-		"release:clean": "npm run clean && npm run release",
-		"release:chrome": "bash scripts/release-chrome.sh",
-		"release:firefox": "bash scripts/release-firefox.sh",
-		"release:safari": "bash scripts/release-safari.sh",
-		"release:lint": "bash scripts/lint.sh",
-		"release:report": "cat release/report.txt"
+	"sideEffects": false,
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
 	},
-	"dependencies": {
-		"@s21/api": "*"
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"check": "tsc --noEmit",
+		"prepublishOnly": "npm run check && npm run build",
+		"format": "bash scripts/format.sh",
+		"format:check": "bash scripts/format-check.sh"
 	},
 	"devDependencies": {
-		"@sveltejs/vite-plugin-svelte": "^5.0.0",
-		"@tsconfig/svelte": "^5.0.4",
-		"@types/chrome": "^0.0.287",
-		"autoprefixer": "^10.4.20",
-		"postcss": "^8.4.49",
 		"prettier": "^3.9.6",
-		"prettier-plugin-svelte": "^4.1.1",
-		"svelte": "^5.0.0",
-		"svelte-check": "^4.1.0",
-		"tailwindcss": "^3.4.15",
-		"typescript": "^5.6.3",
-		"vite": "^6.0.3"
+		"typescript": "^5.6.3"
+	},
+	"keywords": [
+		"s21",
+		"school21",
+		"api",
+		"client",
+		"21-school"
+	],
+	"author": "qFioofa",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/qFioofa/helper-extention.s21.git"
+	},
+	"homepage": "https://github.com/qFioofa/helper-extention.s21#readme",
+	"bugs": {
+		"url": "https://github.com/qFioofa/helper-extention.s21/issues"
+	},
+	"engines": {
+		"node": ">=18"
 	}
 }
