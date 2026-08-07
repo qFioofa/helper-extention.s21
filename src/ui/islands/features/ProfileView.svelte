@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { ParticipantProjectV1DTO } from "@s21/api";
-	import { S21_PLATFORM_ORIGIN, S21_PLATFORM_ROUTES } from "@s21/api";
+	import type { ParticipantProjectV1DTO } from "@qfioofa/s21-api";
+	import { S21_PLATFORM_ORIGIN, S21_PLATFORM_ROUTES } from "@qfioofa/s21-api";
 	import type { FullProfile } from "../../../api/peer";
 	import ProjectLink from "../../shared/ProjectLink.svelte";
 

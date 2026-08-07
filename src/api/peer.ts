@@ -4,7 +4,7 @@ import type {
 	ParticipantSkillV1DTO,
 	ParticipantV1DTO,
 	ParticipantWorkstationV1DTO,
-} from "@s21/api";
+} from "@qfioofa/s21-api";
 import { backgroundClient } from "./client";
 import { logWarn } from "../core/logger.svelte";
 

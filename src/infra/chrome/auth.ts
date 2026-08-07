@@ -1,4 +1,4 @@
-import { S21_PLATFORM_ORIGIN } from "@s21/api";
+import { S21_PLATFORM_ORIGIN } from "@qfioofa/s21-api";
 import { probeAuth, type AuthStatus } from "../../api/session";
 import { logInfo } from "../../core/logger.svelte";
 import { clearStoredToken } from "./token";

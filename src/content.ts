@@ -1,5 +1,5 @@
 import { mount } from "svelte";
-import { S21Client, S21_API_PATH_PREFIX } from "@s21/api";
+import { S21Client, S21_API_PATH_PREFIX } from "@qfioofa/s21-api";
 import App from "./App.svelte";
 import { setThemeRoot } from "./core/stores/theme.svelte";
 import appCss from "./app.css?inline";
