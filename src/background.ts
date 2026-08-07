@@ -8,11 +8,13 @@ import {
 import {
 	clearStoredToken,
 	getAccessToken,
+	getCurrentUsername,
 	getStoredToken,
 	loginWithPassword,
 } from "./infra/chrome/token";
 import { getCookies } from "./infra/chrome/cookies";
 import { backgroundClient } from "./api/session";
+import { fetchFullProfile } from "./api/peer";
 import { logError, logInfo } from "./core/logger.svelte";
 
 export const s21Client = backgroundClient;
@@ -92,6 +94,23 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 					backgroundClient.participant.getByLogin(login.trim()).then((data) => ({ data })),
 				)
 				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:participant:full": {
+			const login = message?.login;
+			const run = (target: string) =>
+				getAccessToken()
+					.then(() => fetchFullProfile(target).then((data) => ({ data })))
+					.then((r) => sendResponse(r))
+					.catch((err) => sendResponse({ error: errPayload(err) }));
+			if (typeof login === "string" && login.trim()) {
+				void run(login.trim());
+				return true;
+			}
+			// Без логина — текущий пользователь (профиль).
+			getCurrentUsername()
+				.then((name) => (name ? run(name) : sendResponse({ error: { message: "not authorized" } })))
 				.catch((err) => sendResponse({ error: errPayload(err) }));
 			return true;
 		}
