@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 	import { logError } from "../../../core/logger.svelte";
 	import type { SaleV1DTO } from "@s21/api";
+	import { S21_PLATFORM_ROUTES } from "@s21/api";
+	import PlatformLink from "../../shared/PlatformLink.svelte";
 
 	const MESSAGE_TIMEOUT_MS = 20_000;
 
@@ -93,32 +95,37 @@
 		Нет данных о sales.
 	</p>
 {:else}
-	<ul class="flex flex-col gap-1.5">
-		{#each viewState.sales as s (s.type + s.status)}
-			<li
-				class="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-2.5 py-2 dark:border-slate-700"
-			>
-				<div class="min-w-0">
-					<p class="truncate text-sm font-semibold">{TYPE_LABEL[s.type] ?? s.type}</p>
-					{#if s.startDateTime}
-						<p class="truncate text-[10px] text-slate-400">
-							нач. {new Date(s.startDateTime).toLocaleString("ru-RU")}
-						</p>
-					{/if}
-				</div>
-				<div class="flex shrink-0 flex-col items-end gap-1">
-					<span
-						class="rounded-full px-2 py-0.5 text-[10px] font-semibold {STATUS_COLOR[s.status] ?? STATUS_COLOR.NON_ACTIVE}"
-					>
-						{STATUS_LABEL[s.status] ?? s.status}
-					</span>
-					{#if typeof s.progressPercentage === "number"}
-						<span class="text-[10px] tabular-nums text-slate-500 dark:text-slate-400">
-							{s.progressPercentage}%
+	<div class="flex flex-col gap-2">
+		<div class="flex items-center justify-between">
+			<PlatformLink path={S21_PLATFORM_ROUTES.sales} label="Sales на сайте" />
+		</div>
+		<ul class="flex flex-col gap-1.5">
+			{#each viewState.sales as s (s.type + s.status)}
+				<li
+					class="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-2.5 py-2 dark:border-slate-700"
+				>
+					<div class="min-w-0">
+						<p class="truncate text-sm font-semibold">{TYPE_LABEL[s.type] ?? s.type}</p>
+						{#if s.startDateTime}
+							<p class="truncate text-[10px] text-slate-400">
+								нач. {new Date(s.startDateTime).toLocaleString("ru-RU")}
+							</p>
+						{/if}
+					</div>
+					<div class="flex shrink-0 flex-col items-end gap-1">
+						<span
+							class="rounded-full px-2 py-0.5 text-[10px] font-semibold {STATUS_COLOR[s.status] ?? STATUS_COLOR.NON_ACTIVE}"
+						>
+							{STATUS_LABEL[s.status] ?? s.status}
 						</span>
-					{/if}
-				</div>
-			</li>
-		{/each}
-	</ul>
+						{#if typeof s.progressPercentage === "number"}
+							<span class="text-[10px] tabular-nums text-slate-500 dark:text-slate-400">
+								{s.progressPercentage}%
+							</span>
+						{/if}
+					</div>
+				</li>
+			{/each}
+		</ul>
+	</div>
 {/if}

@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 	import { logError } from "../../../core/logger.svelte";
 	import type { EventV1DTO } from "@s21/api";
+	import { S21_PLATFORM_ORIGIN, S21_PLATFORM_ROUTES } from "@s21/api";
+	import PlatformLink from "../../shared/PlatformLink.svelte";
 
 	const MESSAGE_TIMEOUT_MS = 20_000;
 
@@ -92,24 +94,40 @@
 		Нет предстоящих событий.
 	</p>
 {:else}
-	<ul class="flex flex-col gap-2.5">
-		{#each viewState.events as e (e.id)}
-			<li>
-				<div class="flex items-center justify-between gap-2">
-					<p class="truncate text-sm font-semibold">{e.name}</p>
-					<span class="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-						{TYPE_LABEL[e.type] ?? e.type}
-					</span>
-				</div>
-				<p class="text-xs text-slate-500 dark:text-slate-400">
-					{new Date(e.startDateTime).toLocaleString("ru-RU")} · {e.location}
-				</p>
-				{#if e.description}
-					<p class="mt-0.5 line-clamp-2 text-[11px] text-slate-400 dark:text-slate-500">
-						{e.description}
-					</p>
-				{/if}
-			</li>
-		{/each}
-	</ul>
+	<div class="flex flex-col gap-2">
+		<div class="flex items-center justify-between">
+			<PlatformLink path={S21_PLATFORM_ROUTES.events} label="События на сайте" />
+		</div>
+		<ul class="flex flex-col gap-2.5">
+			{#each viewState.events as e (e.id)}
+				<li>
+					<a
+						href={`${S21_PLATFORM_ORIGIN}${S21_PLATFORM_ROUTES.event(e.id)}`}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="block"
+					>
+						<div class="flex items-center justify-between gap-2">
+							<p class="truncate text-sm font-semibold text-blue-600 underline-offset-2 hover:underline dark:text-blue-400">
+								{e.name}
+							</p>
+							<span
+								class="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
+							>
+								{TYPE_LABEL[e.type] ?? e.type}
+							</span>
+						</div>
+						<p class="text-xs text-slate-500 dark:text-slate-400">
+							{new Date(e.startDateTime).toLocaleString("ru-RU")} · {e.location}
+						</p>
+						{#if e.description}
+							<p class="mt-0.5 line-clamp-2 text-[11px] text-slate-400 dark:text-slate-500">
+								{e.description}
+							</p>
+						{/if}
+					</a>
+				</li>
+			{/each}
+		</ul>
+	</div>
 {/if}

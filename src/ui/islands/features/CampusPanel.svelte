@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 	import { logError } from "../../../core/logger.svelte";
 	import type { CampusV1DTO, ClusterV1DTO } from "@s21/api";
+	import { S21_PLATFORM_ROUTES } from "@s21/api";
+	import PlatformLink from "../../shared/PlatformLink.svelte";
 
 	const MESSAGE_TIMEOUT_MS = 20_000;
 
@@ -156,6 +158,9 @@
 	</p>
 {:else}
 	<div class="flex flex-col gap-2.5">
+		<div class="flex items-center justify-between">
+			<PlatformLink path={S21_PLATFORM_ROUTES.campusMap} label="Карта на сайте" />
+		</div>
 		<div class="flex items-center gap-2">
 			<select
 				bind:value={campusId}
