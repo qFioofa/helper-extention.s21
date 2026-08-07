@@ -1,6 +1,7 @@
 import type {
 	ParticipantPointsV1DTO,
 	ParticipantProjectV1DTO,
+	ParticipantSkillV1DTO,
 	ParticipantV1DTO,
 	ParticipantWorkstationV1DTO,
 } from "@s21/api";
@@ -16,6 +17,7 @@ export type FullProfile = {
 	participant: ParticipantV1DTO;
 	points: ParticipantPointsV1DTO | null;
 	workstation: ParticipantWorkstationV1DTO | null;
+	skills: ParticipantSkillV1DTO[];
 	inProgress: ParticipantProjectV1DTO[];
 	inReviews: ParticipantProjectV1DTO[];
 	waitingTeam: ParticipantProjectV1DTO[];
@@ -63,6 +65,11 @@ export async function fetchFullProfile(login: string): Promise<FullProfile> {
 		}),
 		backgroundClient.participant.getProjects(login, { limit: PROJECTS_LIMIT }),
 	]);
+	const skills = await backgroundClient.participant.getSkills(login).catch((err) => {
+		logWarn(`skills unavailable for ${login}: ${err}`, "peer");
+		return { skills: [] as ParticipantSkillV1DTO[] };
+	});
+	const skillsList = skills.skills ?? [];
 
 	const inProgress = projects.projects.filter((p) => p.status === "IN_PROGRESS");
 	const inReviews = projects.projects.filter((p) => p.status === "IN_REVIEWS");
@@ -84,6 +91,7 @@ export async function fetchFullProfile(login: string): Promise<FullProfile> {
 		participant,
 		points,
 		workstation,
+		skills: skillsList,
 		inProgress,
 		inReviews,
 		waitingTeam,

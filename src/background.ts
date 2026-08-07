@@ -1,4 +1,4 @@
-import { S21HttpError } from "@s21/api";
+import { S21HttpError, S21_PLATFORM_ORIGIN } from "@s21/api";
 import {
 	getAuthStatus,
 	login as loginAuth,
@@ -10,12 +10,14 @@ import {
 	getAccessToken,
 	getCurrentUsername,
 	getStoredToken,
+	STORED_LOGIN_KEY,
 	loginWithPassword,
+	rememberUsername,
 } from "./infra/chrome/token";
 import { getCookies } from "./infra/chrome/cookies";
 import { backgroundClient } from "./api/session";
 import { fetchFullProfile } from "./api/peer";
-import { logError, logInfo } from "./core/logger.svelte";
+import { logError, logInfo, logWarn } from "./core/logger.svelte";
 
 export const s21Client = backgroundClient;
 
@@ -24,6 +26,55 @@ function errPayload(err: unknown) {
 		return { status: err.status, statusText: err.statusText, body: err.body };
 	}
 	return { message: String(err) };
+}
+
+/** Читает только сохранённый вручную логин из chrome.storage. */
+async function getStoredUsername(): Promise<string | null> {
+	try {
+		const data = await chrome.storage.local.get({ [STORED_LOGIN_KEY]: null });
+		const v = data[STORED_LOGIN_KEY];
+		return typeof v === "string" && v ? v : null;
+	} catch {
+		return null;
+	}
+}
+
+/** Пытается узнать текущий логин: из токена сохранённого, либо со страницы платформы. */
+async function resolveCurrentUsername(): Promise<string | null> {
+	const cached = await getCurrentUsername();
+	if (cached) return cached;
+	try {
+		const tabs = await chrome.tabs.query({ url: S21_PLATFORM_ORIGIN + "/*" });
+		for (const tab of tabs) {
+			if (tab.id == null) continue;
+			try {
+				const res = await chrome.tabs.sendMessage(tab.id, { type: "login:detect" });
+				if (res && typeof res.login === "string" && res.login) {
+					void rememberUsername(res.login);
+					return res.login;
+				}
+			} catch {
+				/* content-скрипт может ещё не быть готов */
+			}
+		}
+	} catch (err) {
+		logWarn(`resolveCurrentUsername: ${err}`, "background");
+	}
+	return null;
+}
+
+/** Спрашивает у контент-скрипта вкладки логин с задержкой на загрузку страницы. */
+async function detectLoginInTab(tabId: number): Promise<string | null> {
+	for (let attempt = 0; attempt < 5; attempt++) {
+		try {
+			const res = await chrome.tabs.sendMessage(tabId, { type: "login:detect" });
+			if (res && typeof res.login === "string" && res.login) return res.login;
+		} catch {
+			/* content-скрипт ещё не готов */
+		}
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+	}
+	return null;
 }
 
 try {
@@ -97,6 +148,52 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 				.catch((err) => sendResponse({ error: errPayload(err) }));
 			return true;
 		}
+		case "profile:stored-login": {
+			getStoredUsername()
+				.then((login) => sendResponse({ login: login ?? null }))
+				.catch((err) => sendResponse({ login: null, error: errPayload(err) }));
+			return true;
+		}
+		case "profile:set-login": {
+			const login = message?.login;
+			if (typeof login !== "string" || !login.trim()) {
+				sendResponse({ ok: false, error: "login required" });
+				return false;
+			}
+			rememberUsername(login.trim()).then(() => sendResponse({ ok: true }));
+			return true;
+		}
+		case "profile:login": {
+			void (async () => {
+				const login = await resolveCurrentUsername();
+				if (login) {
+					sendResponse({ login });
+					return;
+				}
+				// Вариант A: авторизация по кукам — открываем платформу, чтобы
+				// контент-скрипт определил логин, и сохраняем его.
+				try {
+					const tabs = await chrome.tabs.query({ url: S21_PLATFORM_ORIGIN + "/*" });
+					let tab = tabs.find((t) => t.id != null);
+					if (!tab) {
+						tab = await chrome.tabs.create({ url: S21_PLATFORM_ORIGIN, active: false });
+					}
+					const tabId = tab.id;
+					if (tabId != null) {
+						const detected = await detectLoginInTab(tabId);
+						if (detected) {
+							void rememberUsername(detected);
+							sendResponse({ login: detected });
+							return;
+						}
+					}
+				} catch (err) {
+					logWarn(`profile:login platform detect failed: ${err}`, "background");
+				}
+				sendResponse({ login: null });
+			})();
+			return true;
+		}
 		case "api:participant:full": {
 			const login = message?.login;
 			const run = (target: string) =>
@@ -109,8 +206,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 				return true;
 			}
 			// Без логина — текущий пользователь (профиль).
-			getCurrentUsername()
-				.then((name) => (name ? run(name) : sendResponse({ error: { message: "not authorized" } })))
+			resolveCurrentUsername()
+				.then((name) => {
+					if (!name) {
+						sendResponse({ error: { message: "not authorized" } });
+						return;
+					}
+					void rememberUsername(name);
+					run(name);
+				})
 				.catch((err) => sendResponse({ error: errPayload(err) }));
 			return true;
 		}
