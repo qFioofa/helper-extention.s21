@@ -102,6 +102,7 @@ export async function loginWithPassword(
 		});
 		cached = await postToken(body);
 		await persist();
+		void rememberUsername(username);
 		logInfo("password login ok", "auth", { expires_at: cached.expires_at });
 		return { ok: true };
 	} catch (err) {
@@ -146,6 +147,59 @@ export async function getAccessToken(): Promise<string | null> {
 export async function getStoredToken(): Promise<string | null> {
 	await hydrate();
 	return cached?.access_token ?? null;
+}
+
+/**
+ * Возвращает текущий логин из JWT (preferred_username), не проверяя подпись.
+ * Фоллбэк: сохранённый логин из chrome.storage (для cookie-сессий без bearer).
+ */
+export async function getCurrentUsername(): Promise<string | null> {
+	const token = await getAccessToken();
+	const fromJwt = token ? usernameFromJwt(token) : null;
+	if (fromJwt) {
+		void rememberUsername(fromJwt);
+		return fromJwt;
+	}
+	try {
+		const data = await chrome.storage.local.get({ [STORED_LOGIN_KEY]: null });
+		const stored = data[STORED_LOGIN_KEY];
+		return typeof stored === "string" && stored ? stored : null;
+	} catch {
+		return null;
+	}
+}
+
+export const STORED_LOGIN_KEY = "s21-helper:login";
+
+function usernameFromJwt(token: string): string | null {
+	const [, payloadB64] = token.split(".");
+	if (!payloadB64) return null;
+	try {
+		const payload = JSON.parse(decodeBase64Url(payloadB64)) as {
+			preferred_username?: unknown;
+		};
+		return typeof payload.preferred_username === "string" && payload.preferred_username
+			? payload.preferred_username
+			: null;
+	} catch {
+		return null;
+	}
+}
+
+/** Сохраняет текущий логин, чтобы «Мой профиль» работал и без bearer-токена. */
+export async function rememberUsername(username: string) {
+	if (!username) return;
+	try {
+		await chrome.storage.local.set({ [STORED_LOGIN_KEY]: username });
+	} catch {
+		/* ignore */
+	}
+}
+
+function decodeBase64Url(input: string): string {
+	const b64 = input.replace(/-/g, "+").replace(/_/g, "/");
+	const pad = b64.length % 4 === 0 ? "" : "=".repeat(4 - (b64.length % 4));
+	return atob(b64 + pad);
 }
 
 export async function clearStoredToken() {

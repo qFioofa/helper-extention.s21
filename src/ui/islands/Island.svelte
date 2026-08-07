@@ -5,10 +5,12 @@
 	let { island }: { island: IslandDef } = $props();
 
 	const Component = $derived(island.component);
+	let remountKey = $state(0);
 	let refreshing = $state(false);
 
 	function refresh() {
 		refreshing = true;
+		remountKey += 1;
 		setTimeout(() => (refreshing = false), 600);
 	}
 </script>
@@ -23,7 +25,9 @@
 	</h3>
 
 	<div class="px-3 pb-3 pt-1">
-		<Component />
+		{#key remountKey}
+			<Component />
+		{/key}
 	</div>
 
 	<button

@@ -9,6 +9,71 @@ export const s21Client = new S21Client({
 	baseUrl: `${location.origin}${S21_API_PATH_PREFIX}`,
 });
 
+// ---- Детект текущего логина по данным SPA платформы ------------------------
+const JWT_RE = /eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*/g;
+
+function decodeJwtUsername(raw: string): string | null {
+	const candidates = raw.match(JWT_RE);
+	if (!candidates) return null;
+	for (const token of candidates) {
+		try {
+			const payloadB64 = token.split(".")[1]?.replace(/-/g, "+").replace(/_/g, "/");
+			if (!payloadB64) continue;
+			const payload = JSON.parse(atob(payloadB64)) as { preferred_username?: unknown };
+			if (typeof payload.preferred_username === "string" && payload.preferred_username) {
+				return payload.preferred_username;
+			}
+		} catch {
+			/* не JWT */
+		}
+	}
+	return null;
+}
+
+function detectUsernameFromStorage(): string | null {
+	for (const store of [window.localStorage, window.sessionStorage]) {
+		try {
+			for (let i = 0; i < store.length; i++) {
+				const key = store.key(i);
+				if (!key) continue;
+				const value = store.getItem(key) ?? "";
+				const fromKey = decodeJwtUsername(key);
+				if (fromKey) return fromKey;
+				const fromValue = decodeJwtUsername(value);
+				if (fromValue) return fromValue;
+			}
+		} catch {
+			/* storage может быть недоступен */
+		}
+	}
+	return null;
+}
+
+function detectUsernameFromDom(): string | null {
+	const selectors = [
+		"[data-login]",
+		"[data-username]",
+		"[data-testid='profile-menu'] [class*='user']",
+		".profile-menu",
+		"[class*='user-menu'] a[href*='/user/']",
+	];
+	for (const sel of selectors) {
+		try {
+			const el = document.querySelector<HTMLElement>(sel);
+			if (!el) continue;
+			const text = el.getAttribute("data-login") || el.getAttribute("data-username") || "";
+			if (text.trim()) return text.trim();
+		} catch {
+			/* ignore */
+		}
+	}
+	return null;
+}
+
+export function detectCurrentLogin(): string | null {
+	return detectUsernameFromStorage() ?? detectUsernameFromDom();
+}
+
 const HOST_ID = "s21-helper-host";
 const PANEL_WIDTH = 380;
 const PANEL_HEIGHT = 560;
@@ -105,6 +170,15 @@ function initWidget() {
 }
 
 initWidget();
+
+// По запросу от фона возвращаем текущий логин, найденный на странице платформы.
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+	if (message?.type === "login:detect") {
+		sendResponse({ login: detectCurrentLogin() });
+		return true;
+	}
+	return false;
+});
 
 // Реальный запрос к API платформы (same-origin) — виден в Network страницы.
 // Пробивает сsession по-настоящему и подтверждает, что расширение ходит в API.

@@ -1,23 +1,16 @@
 <script lang="ts">
 	import Icon from "../../shared/Icon.svelte";
 	import { logError, logInfo } from "../../../core/logger.svelte";
+	import type { FullProfile } from "../../../api/peer";
+	import ProfileView from "./ProfileView.svelte";
 
-	const MESSAGE_TIMEOUT_MS = 8000;
+	const MESSAGE_TIMEOUT_MS = 15_000;
 
 	type LookupState =
 		| { kind: "idle" }
 		| { kind: "loading" }
 		| { kind: "error"; message: string }
-		| {
-				kind: "done";
-				login: string;
-				className?: string;
-				parallelName?: string;
-				expValue: number;
-				level: number;
-				campus: string;
-				status: string;
-		  };
+		| { kind: "done"; profile: FullProfile };
 
 	let query = $state("");
 	let lookup = $state<LookupState>({ kind: "idle" });
@@ -59,30 +52,12 @@
 		lookup = { kind: "loading" };
 		try {
 			const res = await withTimeout(
-				chrome.runtime.sendMessage({ type: "api:participant", login }),
+				chrome.runtime.sendMessage({ type: "api:participant:full", login }),
 				MESSAGE_TIMEOUT_MS,
 			);
 			if (res?.data) {
-				const d = res.data as {
-					login: string;
-					className?: string;
-					parallelName?: string;
-					expValue: number;
-					level: number;
-					status: string;
-					campus?: { shortName?: string; id?: string };
-				};
-				lookup = {
-					kind: "done",
-					login: d.login,
-					className: d.className,
-					parallelName: d.parallelName,
-					expValue: d.expValue,
-					level: d.level,
-					campus: d.campus?.shortName ?? String(d.campus?.id ?? ""),
-					status: d.status,
-				};
-				logInfo(`participant ${d.login} loaded`, "search");
+				lookup = { kind: "done", profile: res.data as FullProfile };
+				logInfo(`participant ${login} loaded`, "search");
 			} else if (res?.error) {
 				lookup = { kind: "error", message: formatError(res.error) };
 				logError(`participant ${login}: ${formatError(res.error)}`, "search");
@@ -127,41 +102,13 @@
 		{lookup.message}
 	</p>
 {:else if lookup.kind === "done"}
-	<div class="mt-3 rounded-lg border border-slate-200 p-2.5 dark:border-slate-700">
-		<div class="flex items-center gap-2.5">
-			<div
-				class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white"
-			>
-				{lookup.login[0]?.toUpperCase() ?? "?"}
-			</div>
-			<div class="min-w-0 flex-1">
-				<p class="truncate text-sm font-bold">{lookup.login}</p>
-				<p class="truncate text-[11px] text-slate-500 dark:text-slate-400">
-					{lookup.campus}{lookup.className ? ` · ${lookup.className}` : ""}{lookup.parallelName
-						? ` · ${lookup.parallelName}`
-						: ""}
-				</p>
-			</div>
-			<span
-				class="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-			>
-				{lookup.status}
-			</span>
-		</div>
-		<div class="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
-			<span class="text-slate-500 dark:text-slate-400">Уровень</span>
-			<span class="font-bold tabular-nums text-blue-600 dark:text-blue-400">
-				{lookup.level}
-			</span>
-			<span class="text-slate-500 dark:text-slate-400">XP</span>
-			<span class="font-bold tabular-nums">{lookup.expValue.toLocaleString("ru-RU")}</span>
-		</div>
+	<div class="mt-3">
+		<ProfileView profile={lookup.profile} />
 	</div>
 {/if}
 
 {#if lookup.kind === "idle"}
 	<p class="mt-3 text-[11px] text-slate-400">
-		Тестовый модуль: реальный запрос <span class="font-mono">GET /v1/participants/&#123;login&#125;</span> через
-		background.
+		Введите ник участника, чтобы увидеть уровень, PRP, место и проекты.
 	</p>
 {/if}

@@ -2,9 +2,8 @@ import type { Component } from "svelte";
 import ParticipantCard from "../ui/islands/features/ParticipantCard.svelte";
 import XpPanel from "../ui/islands/features/XpPanel.svelte";
 import SkillsPanel from "../ui/islands/features/SkillsPanel.svelte";
+import ProfilePanel from "../ui/islands/features/ProfilePanel.svelte";
 import ProjectsPanel from "../ui/islands/features/ProjectsPanel.svelte";
-import EventsPanel from "../ui/islands/features/EventsPanel.svelte";
-import CampusPanel from "../ui/islands/features/CampusPanel.svelte";
 import SearchPanel from "../ui/islands/features/SearchPanel.svelte";
 import SettingsPanel from "../ui/islands/features/SettingsPanel.svelte";
 import AuthPanel from "../ui/islands/features/AuthPanel.svelte";
@@ -40,31 +39,9 @@ export const categories: CategoryDef[] = [
 		title: "Профиль",
 		icon: "user",
 		islands: [
-			{ id: "participant", title: "Участник", component: ParticipantCard },
-			{ id: "xp", title: "Прогресс", component: XpPanel },
+			{ id: "profile", title: "Мой профиль", component: ProfilePanel },
 			{ id: "skills", title: "Навыки", component: SkillsPanel },
 		],
-	},
-	{
-		id: "projects",
-		title: "Проекты",
-		icon: "folder",
-		islands: [
-			{ id: "projects", title: "Проекты", component: ProjectsPanel },
-			{ id: "xp", title: "Прогресс", component: XpPanel },
-		],
-	},
-	{
-		id: "events",
-		title: "События",
-		icon: "calendar",
-		islands: [{ id: "events", title: "Ближайшие события", component: EventsPanel }],
-	},
-	{
-		id: "campus",
-		title: "Кампус",
-		icon: "building",
-		islands: [{ id: "campus", title: "Кластеры", component: CampusPanel }],
 	},
 	{
 		id: "search",
