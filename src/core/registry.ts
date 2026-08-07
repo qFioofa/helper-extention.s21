@@ -1,14 +1,14 @@
 import type { Component } from "svelte";
-import ParticipantCard from "../ui/islands/features/ParticipantCard.svelte";
-import XpPanel from "../ui/islands/features/XpPanel.svelte";
 import SkillsPanel from "../ui/islands/features/SkillsPanel.svelte";
 import ProfilePanel from "../ui/islands/features/ProfilePanel.svelte";
-import ProjectsPanel from "../ui/islands/features/ProjectsPanel.svelte";
 import SearchPanel from "../ui/islands/features/SearchPanel.svelte";
 import SettingsPanel from "../ui/islands/features/SettingsPanel.svelte";
 import AuthPanel from "../ui/islands/features/AuthPanel.svelte";
 import LogsPanel from "../ui/islands/features/LogsPanel.svelte";
 import CookiesPanel from "../ui/islands/features/CookiesPanel.svelte";
+import CampusPanel from "../ui/islands/features/CampusPanel.svelte";
+import SalesPanel from "../ui/islands/features/SalesPanel.svelte";
+import EventsPanel from "../ui/islands/features/EventsPanel.svelte";
 
 export type IslandDef = {
 	id: string;
@@ -29,9 +29,9 @@ export const categories: CategoryDef[] = [
 		title: "Дашборд",
 		icon: "grid",
 		islands: [
-			{ id: "participant", title: "Участник", component: ParticipantCard },
-			{ id: "xp", title: "Прогресс", component: XpPanel },
-			{ id: "projects", title: "Проекты", component: ProjectsPanel },
+			{ id: "campus", title: "Карта кампуса", component: CampusPanel },
+			{ id: "sales", title: "Sales", component: SalesPanel },
+			{ id: "events", title: "События", component: EventsPanel },
 		],
 	},
 	{
