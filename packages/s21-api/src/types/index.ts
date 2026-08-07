@@ -1,9 +1,0 @@
-export type * from "./campus";
-export type * from "./common";
-export type * from "./course";
-export type * from "./event";
-export type * from "./graph";
-export type * from "./params";
-export type * from "./participant";
-export type * from "./project";
-export type * from "./sale";
