@@ -26,7 +26,7 @@ export class HttpTransport {
 
 	constructor(options: HttpTransportOptions) {
 		this.baseUrl = options.baseUrl.replace(/\/+$/, "");
-		this.fetchImpl = options.fetch ?? globalThis.fetch;
+		this.fetchImpl = options.fetch ?? globalThis.fetch.bind(globalThis);
 		this.credentials = options.credentials ?? "include";
 		this.defaultHeaders = { ...options.defaultHeaders };
 	}
