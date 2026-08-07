@@ -7,6 +7,13 @@ VERSION="$(node -p "require('$ROOT/package.json').version")"
 DEST="$ROOT/release"
 STAGE_ROOT="$ROOT/.release"
 
+# Load .env if present (e.g. FIREFOX_API_KEY for a signed Firefox release).
+if [ -f "$ROOT/.env" ]; then
+	set -a
+	source "$ROOT/.env"
+	set +a
+fi
+
 # ---- ANSI colors ------------------------------------------------------------
 C_RESET=$'\033[0m'
 C_BOLD=$'\033[1m'
