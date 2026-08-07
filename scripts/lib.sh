@@ -263,6 +263,10 @@ REPORT_ERRORS_FILE="$REPORT_DIR/.errors"
 REPORT_WARNINGS_LOG="$REPORT_DIR/.warnings.log"
 REPORT_ERRORS_LOG="$REPORT_DIR/.errors.log"
 
+# Report helpers must always be able to write state files, even when a
+# sub-script (e.g. release-chrome.sh) is run without release.sh/build.sh first.
+mkdir -p "$REPORT_DIR"
+
 report_reset() {
 	: >"$REPORT_TARGETS_FILE"
 	: >"$REPORT_ARTIFACTS_FILE"
