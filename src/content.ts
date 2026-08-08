@@ -2,6 +2,8 @@ import { mount } from "svelte";
 import { S21Client, S21_API_PATH_PREFIX } from "@qfioofa/s21-api";
 import App from "./App.svelte";
 import { setThemeRoot } from "./core/stores/theme.svelte";
+import { eventToShortcut } from "./core/keybinding";
+import { DEFAULT_SHORTCUT, SHORTCUT_STORAGE_KEY } from "./infra/chrome/commands";
 import appCss from "./app.css?inline";
 
 // В контексте страницы платформы запросы идут same-origin с сессионными куками.
@@ -179,24 +181,101 @@ function initWidget() {
 	});
 
 	let open = false;
-	fab.addEventListener("click", () => {
+	function togglePanel() {
 		open = !open;
 		panel.style.display = open ? "block" : "none";
 		fab.style.background = open ? "#1d4ed8" : "#2563eb";
-	});
+		return open;
+	}
+	fab.addEventListener("click", togglePanel);
 
 	document.documentElement.appendChild(host);
+
+	return togglePanel;
 }
 
-initWidget();
+let togglePanel: (() => boolean) | undefined;
+try {
+	togglePanel = initWidget();
+} catch (err) {
+	console.warn("[s21-helper] init widget failed:", err);
+}
+
+// ---- Горячая клавиша открытия/закрытия панели ------------------------------
+let configuredShortcut: string = DEFAULT_SHORTCUT;
+let nativeShortcut: string | null | undefined; // undefined = ещё не известен
+
+async function refreshShortcut() {
+	try {
+		const res = (await chrome.runtime.sendMessage({ type: "shortcut:native" })) as
+			{ shortcut?: string | null } | undefined;
+		nativeShortcut = res?.shortcut ?? null;
+		const stored = await chrome.storage.local.get({ [SHORTCUT_STORAGE_KEY]: DEFAULT_SHORTCUT });
+		const v = stored[SHORTCUT_STORAGE_KEY];
+		configuredShortcut = typeof v === "string" && v ? v : DEFAULT_SHORTCUT;
+	} catch {
+		nativeShortcut = null;
+	}
+}
+
+void refreshShortcut();
+
+chrome.storage?.onChanged?.addListener((changes, area) => {
+	if (area === "local" && SHORTCUT_STORAGE_KEY in changes) {
+		void refreshShortcut();
+	}
+});
+
+/** Проверяет, находится ли событие внутри панели расширения (shadow DOM). */
+function isInsidePanel(e: KeyboardEvent): boolean {
+	return e.composedPath().some((el) => el instanceof Element && el.id === HOST_ID);
+}
+
+/** Проверяет, что фокус ввода стоит в текстовом поле / редакторе. */
+function isEditableTarget(e: KeyboardEvent): boolean {
+	const target = e.composedPath()[0];
+	if (!(target instanceof Element)) return false;
+	const tag = target.tagName;
+	if (tag === "INPUT" || tag === "TEXTAREA") return true;
+	return (target as HTMLElement).isContentEditable;
+}
+
+/** Одиночная клавиша, которая печатает символ (а не управляющая клавиша). */
+function isTypingKey(combo: string): boolean {
+	return /^[A-Z0-9]$/.test(combo) || combo === "Space";
+}
+
+function onShortcutKeydown(e: KeyboardEvent) {
+	if (nativeShortcut === undefined) return;
+	if (e.repeat) return;
+	if (isInsidePanel(e)) return;
+	const combo = eventToShortcut(e);
+	if (!combo) return;
+	if (combo === nativeShortcut) return; // нативный chrome.commands уже переключает
+	if (combo !== configuredShortcut) return;
+	// Простое нажатие не должно срабатывать, пока пользователь печатает текст.
+	if (!combo.includes("+") && isTypingKey(combo) && isEditableTarget(e)) return;
+	e.preventDefault();
+	e.stopPropagation();
+	e.stopImmediatePropagation();
+	togglePanel?.();
+}
+
+window.addEventListener("keydown", onShortcutKeydown, true);
 
 // По запросу от фона возвращаем текущий логин, найденный на странице платформы.
+// И переключаем панель расширения, когда активируется горячая клавиша.
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-	if (message?.type === "login:detect") {
-		sendResponse({ login: detectCurrentLogin() });
-		return true;
+	switch (message?.type) {
+		case "login:detect":
+			sendResponse({ login: detectCurrentLogin() });
+			return true;
+		case "panel:toggle":
+			sendResponse({ open: togglePanel ? togglePanel() : false });
+			return true;
+		default:
+			return false;
 	}
-	return false;
 });
 
 // Реальный запрос к API платформы (same-origin) — виден в Network страницы.

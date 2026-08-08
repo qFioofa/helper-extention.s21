@@ -15,6 +15,14 @@
 	"background": {
 		"service_worker": "background.js"
 	},
+	"commands": {
+		"toggle-helper-panel": {
+			"suggested_key": {
+				"default": "Ctrl+M"
+			},
+			"description": "Открыть или закрыть панель расширения"
+		}
+	},
 	"content_scripts": [
 		{
 			"matches": ["https://platform.21-school.ru/*", "https://auth.21-school.ru/*"],
