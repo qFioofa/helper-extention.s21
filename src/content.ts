@@ -226,12 +226,35 @@ chrome.storage?.onChanged?.addListener((changes, area) => {
 	}
 });
 
+/** Проверяет, находится ли событие внутри панели расширения (shadow DOM). */
+function isInsidePanel(e: KeyboardEvent): boolean {
+	return e.composedPath().some((el) => el instanceof Element && el.id === HOST_ID);
+}
+
+/** Проверяет, что фокус ввода стоит в текстовом поле / редакторе. */
+function isEditableTarget(e: KeyboardEvent): boolean {
+	const target = e.composedPath()[0];
+	if (!(target instanceof Element)) return false;
+	const tag = target.tagName;
+	if (tag === "INPUT" || tag === "TEXTAREA") return true;
+	return (target as HTMLElement).isContentEditable;
+}
+
+/** Одиночная клавиша, которая печатает символ (а не управляющая клавиша). */
+function isTypingKey(combo: string): boolean {
+	return /^[A-Z0-9]$/.test(combo) || combo === "Space";
+}
+
 function onShortcutKeydown(e: KeyboardEvent) {
 	if (nativeShortcut === undefined) return;
+	if (e.repeat) return;
+	if (isInsidePanel(e)) return;
 	const combo = eventToShortcut(e);
 	if (!combo) return;
 	if (combo === nativeShortcut) return; // нативный chrome.commands уже переключает
 	if (combo !== configuredShortcut) return;
+	// Простое нажатие не должно срабатывать, пока пользователь печатает текст.
+	if (!combo.includes("+") && isTypingKey(combo) && isEditableTarget(e)) return;
 	e.preventDefault();
 	e.stopPropagation();
 	e.stopImmediatePropagation();

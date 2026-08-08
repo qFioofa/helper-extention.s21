@@ -8,6 +8,12 @@ const KEY_ALIASES: Record<string, string> = {
 	ARROWDOWN: "Down",
 	ARROWLEFT: "Left",
 	ARROWRIGHT: "Right",
+	Home: "Home",
+	End: "End",
+	PageUp: "PageUp",
+	PageDown: "PageDown",
+	Insert: "Insert",
+	Delete: "Delete",
 };
 
 const FUNCTION_KEYS = /^F(?:[1-9]|1[0-2])$/;
@@ -53,19 +59,22 @@ export function eventToShortcut(e: KeyboardEvent): string | null {
 /** Проверяет корректность комбинации для chrome.commands. */
 export function isValidShortcut(shortcut: string): boolean {
 	const parts = shortcut.split("+");
-	if (parts.length < 2 || parts.length > 3) return false;
+	if (parts.length < 1 || parts.length > 3) return false;
 	const mods = parts.slice(0, -1);
 	const key = parts[parts.length - 1];
+
+	const isFunctionKey = FUNCTION_KEYS.test(key);
+	const isMediaKey = MEDIA_KEYS.includes(key);
+	if (!isFunctionKey && !isMediaKey && !PLAIN_KEYS.has(key) && !/^[A-Z0-9]$/.test(key)) {
+		return false;
+	}
+
+	// Простое нажатие — одиночная клавиша без модификаторов.
+	if (mods.length === 0) return true;
+
 	if (!mods.every((m) => (MODIFIERS as readonly string[]).includes(m))) return false;
 	if (new Set(mods).size !== mods.length) return false;
 	if (mods.includes("Ctrl") && mods.includes("MacCtrl")) return false;
 	if (mods.includes("MacCtrl") && mods.includes("Command")) return false;
-
-	const isFunctionKey = FUNCTION_KEYS.test(key);
-	const isMediaKey = MEDIA_KEYS.includes(key);
-	if (mods.length === 0 && !isFunctionKey && !isMediaKey) return false;
-	if (!isFunctionKey && !isMediaKey && !PLAIN_KEYS.has(key) && !/^[A-Z0-9]$/.test(key)) {
-		return false;
-	}
 	return true;
 }
