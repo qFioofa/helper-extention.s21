@@ -19,9 +19,9 @@ async function persist(status: AuthStatus) {
 }
 
 // ---- Кэш/дедупликация probe: сеть не трогаем чаще, чем раз в TTL ---------
-// Метка последнего probe хранится в chrome.storage.session — переживает
-// перезапуск service worker (иначе кэш сбрасывался при «засыпании» и probe
-// стартовал заново на каждое событие -> бесконечная проверка).
+// Метка последнего probe хранится в storage.local (поддерживается и Chrome, и
+// Firefox) — переживает перезапуск service worker, поэтому кэш не сбрасывается
+// при «засыпании» и probe не стартует заново на каждое событие.
 
 const DEBOUNCE_KEY = "s21-helper:auth-probe-at";
 
@@ -42,17 +42,12 @@ async function hydrateCache() {
 }
 
 async function lastProbeAt(): Promise<number> {
-	if (chrome.storage?.session) {
-		const data = await chrome.storage.session.get({ [DEBOUNCE_KEY]: 0 });
-		return Number(data[DEBOUNCE_KEY]) || memProbeAt || 0;
-	}
-	return memProbeAt;
+	const data = await chrome.storage.local.get({ [DEBOUNCE_KEY]: 0 });
+	return Number(data[DEBOUNCE_KEY]) || memProbeAt || 0;
 }
 
 async function markProbeAt() {
-	if (chrome.storage?.session) {
-		await chrome.storage.session.set({ [DEBOUNCE_KEY]: Date.now() });
-	}
+	await chrome.storage.local.set({ [DEBOUNCE_KEY]: Date.now() });
 	memProbeAt = Date.now();
 }
 
