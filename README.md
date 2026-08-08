@@ -1,14 +1,39 @@
-# Helper S21
-
-Вспомогательное расширение для браузера, которое делает работу с платформой
-[S21](https://platform.21-school.ru) удобнее: профиль, XP, кампус и события —
-прямо в popup расширения.
+<h1 align="center">Helper S21</h1>
 
 <p align="center">
-  <img src="./public/icons/icon128.png" alt="Helper S21" width="110"/>
+  <em>Расширение для браузера, которое делает работу с платформой
+  <a href="https://platform.21-school.ru">S21</a> удобнее: профиль, XP, кампус и
+  события — прямо в popup расширения.</em>
+</p>
+
+<p align="center">
+  <img src="./public/icons/icon128.png" alt="Helper S21" width="110" />
+</p>
+
+<p align="center">
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square&logo=github&logoColor=white" alt="License: MIT" />
+  </a>
+  <img src="https://img.shields.io/badge/Version-1.0.0-1E90FF?style=flat-square&logo=semver&logoColor=white" alt="Version 1.0.0" />
+  <img src="https://img.shields.io/badge/Last%20release-1.0.1-009688?style=flat-square&logo=git&logoColor=white" alt="Last release 1.0.1" />
+  <img src="https://img.shields.io/badge/Manifest-MV3-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Manifest V3" />
+  <img src="https://img.shields.io/badge/Firefox-Available-00B1B1?style=flat-square&logo=firefox&logoColor=white" alt="Firefox" />
 </p>
 
 ---
+
+## Стек
+
+<p align="center">
+  <a href="https://svelte.dev">
+    <img src="https://go-skill-icons.vercel.app/api/icons?i=svelte,typescript,vite,tailwind,chrome,nodejs" alt="Svelte · TypeScript · Vite · Tailwind CSS · Chrome · Node.js" height="52" />
+  </a>
+</p>
+
+- **Svelte 5** + **TypeScript**, сборка на **Vite**, стили — **Tailwind CSS**
+- **Manifest V3**: `background.js` (service worker) + `content.js`
+- API-клиент **[@qfioofa/s21-api](https://www.npmjs.com/package/@qfioofa/s21-api)**
+- Поддержка **Chrome**, **Firefox**, **Safari**
 
 ## Ключевые возможности
 
@@ -19,20 +44,16 @@
 - **Авторизация** — хранение токена, вход и контроль статуса
 - **Настройки и логи** — тёмная тема, компактные острова, подробный журнал
 
-## Стек
+> Статус и последний релиз — [ссылка](https://github.com/qFioofa/helper-extention.s21/releases)
 
-<p align="center">
-  <img src="diagrams/stack.png" alt="Технологический стек"/>
-</p>
+## Установка (Chrome)
 
-- **Svelte 5** + **TypeScript**, **Vite**, **Tailwind CSS**
-- **Manifest V3**: `background.js` (service worker) + `content.js`
-- API-клиент **@qfioofa/s21-api**
+Полная инструкция — в [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 ## Структура проекта
 
 <p align="center">
-  <img src="diagrams/structure.png" alt="Структура проекта"/>
+  <img src="diagrams/structure.png" alt="Структура проекта" />
 </p>
 
 ```text
@@ -42,10 +63,6 @@ src/
 ├── infra/chrome/     # auth, token, cookies
 └── ui/               # layout, island-виджеты (Svelte)
 ```
-
-## Установка (Chrome)
-
-Полная инструкция — в [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 ```bash
 npm install
