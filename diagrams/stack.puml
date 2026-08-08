@@ -1,0 +1,47 @@
+@startuml stack
+skinparam {
+  BackgroundColor #0f172a
+  ComponentBackgroundColor #1e293b
+  ComponentBorderColor #334155
+  ComponentFontColor #e2e8f0
+  ComponentFontSize 14
+  PackageBackgroundColor #0f172a
+  PackageBorderColor #3b82f6
+  PackageFontColor #93c5fd
+  ArrowColor #64748b
+  DefaultFontName Arial
+}
+
+package "Фронтенд (UI)" {
+  [Svelte 5] as svelte
+  [TypeScript] as ts
+}
+
+package "Сборка" {
+  [Vite] as vite
+  [svelte-check] as check
+  [PlantUML / docs] as docs
+}
+
+package "Стили" {
+  [Tailwind CSS] as tw
+}
+
+package "Расширение" {
+  [Manifest V3] as mv3
+  [chrome.* API] as chrome
+  [content.js] as content
+  [background.js] as bg
+}
+
+package "API" {
+  [@qfioofa/s21-api] as api
+  [platform.21-school.ru] as host
+}
+
+svelte -[hidden]-> ts
+vite -[hidden]-> tail
+mv3 -down-> content
+bg -right-> api
+api -right-> host
+@enduml
