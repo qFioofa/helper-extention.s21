@@ -16,7 +16,11 @@ export const icons: Record<string, SvgNode[]> = {
 		n("path", { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" }),
 		n("circle", { cx: "12", cy: "7", r: "4" }),
 	],
-	folder: [n("path", { d: "M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" })],
+	folder: [
+		n("path", {
+			d: "M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z",
+		}),
+	],
 	calendar: [
 		n("path", { d: "M8 2v4" }),
 		n("path", { d: "M16 2v4" }),
@@ -89,5 +93,16 @@ export const icons: Record<string, SvgNode[]> = {
 	terminal: [
 		n("polyline", { points: "4 17 10 11 4 5" }),
 		n("line", { x1: "12", x2: "20", y1: "19", y2: "19" }),
+	],
+	keyboard: [
+		n("rect", { width: "20", height: "16", x: "2", y: "4", rx: "2" }),
+		n("path", { d: "M6 8h.001" }),
+		n("path", { d: "M10 8h.001" }),
+		n("path", { d: "M14 8h.001" }),
+		n("path", { d: "M18 8h.001" }),
+		n("path", { d: "M8 12h.001" }),
+		n("path", { d: "M12 12h.001" }),
+		n("path", { d: "M16 12h.001" }),
+		n("path", { d: "M7 16h10" }),
 	],
 };

@@ -15,11 +15,37 @@ import {
 	rememberUsername,
 } from "./infra/chrome/token";
 import { getCookies } from "./infra/chrome/cookies";
+import { getPopupShortcut, TOGGLE_PANEL_COMMAND } from "./infra/chrome/commands";
 import { backgroundClient } from "./api/session";
 import { fetchFullProfile } from "./api/peer";
 import { logError, logInfo, logWarn } from "./core/logger.svelte";
 
 export const s21Client = backgroundClient;
+
+const PANEL_URLS = [S21_PLATFORM_ORIGIN + "/*", "https://auth.21-school.ru/*"];
+
+/** Переключает панель расширения (правый нижний угол) во всех открытых вкладках платформы. */
+async function togglePanelInTabs() {
+	try {
+		const tabs = await chrome.tabs.query({ url: PANEL_URLS });
+		for (const tab of tabs) {
+			if (tab.id == null) continue;
+			try {
+				await chrome.tabs.sendMessage(tab.id, { type: "panel:toggle" });
+			} catch {
+				/* контент-скрипт может быть ещё не готов */
+			}
+		}
+	} catch (err) {
+		logWarn(`togglePanelInTabs: ${err}`, "background");
+	}
+}
+
+chrome.commands.onCommand.addListener((command) => {
+	if (command === TOGGLE_PANEL_COMMAND) {
+		void togglePanelInTabs();
+	}
+});
 
 function errPayload(err: unknown) {
 	if (err instanceof S21HttpError) {
@@ -129,6 +155,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 		case "token:clear":
 			void clearStoredToken().then(() => sendResponse({ ok: true }));
 			return true;
+		case "shortcut:native":
+			getPopupShortcut().then(
+				(shortcut) => sendResponse({ shortcut }),
+				() => sendResponse({ shortcut: null }),
+			);
+			return true;
 		case "cookies:get":
 			getCookies()
 				.then((cookies) => sendResponse({ cookies }))
@@ -142,7 +174,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 			}
 			getAccessToken()
 				.then(() =>
-					backgroundClient.participant.getByLogin(login.trim()).then((data) => ({ data })),
+					backgroundClient.participant
+						.getByLogin(login.trim())
+						.then((data) => ({ data })),
 				)
 				.then((r) => sendResponse(r))
 				.catch((err) => sendResponse({ error: errPayload(err) }));
@@ -194,7 +228,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 			})();
 			return true;
 		}
-case "api:participant:full": {
+		case "api:participant:full": {
 			const login = message?.login;
 			const run = (target: string) =>
 				getAccessToken()
@@ -255,7 +289,10 @@ case "api:participant:full": {
 					backgroundClient.event
 						.getEvents({
 							from: typeof from === "string" ? from : new Date().toISOString(),
-							to: typeof to === "string" ? to : new Date(Date.now() + 2592e6).toISOString(),
+							to:
+								typeof to === "string"
+									? to
+									: new Date(Date.now() + 2592e6).toISOString(),
 							limit: typeof limit === "number" ? limit : 20,
 						})
 						.then((data) => ({ data })),
