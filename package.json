@@ -1,11 +1,11 @@
 {
 	"name": "helper-extension-s21",
 	"private": true,
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build && BUILD_ENTRY=background vite build --config vite.content.config.ts && BUILD_ENTRY=content vite build --config vite.content.config.ts",
+		"build": "vite build && BUILD_ENTRY=background vite build --config vite.content.config.ts && BUILD_ENTRY=content vite build --config vite.content.config.ts && node scripts/patch-version.mjs",
 		"build:full": "bash scripts/build.sh",
 		"preview": "vite preview",
 		"clean": "rm -rf dist .release",
