@@ -146,9 +146,6 @@ vite.config.ts.timestamp-*
 release/
 .release/
 
-# Local environment / secrets
-.env
-
 # Python artifacts
 __pycache__/
 *.py[cod]
