@@ -7,6 +7,13 @@ VERSION="$(node -p "require('$ROOT/package.json').version")"
 DEST="$ROOT/release"
 STAGE_ROOT="$ROOT/.release"
 
+# Load .env if present (e.g. FIREFOX_API_KEY for a signed Firefox release).
+if [ -f "$ROOT/.env" ]; then
+	set -a
+	source "$ROOT/.env"
+	set +a
+fi
+
 # ---- ANSI colors ------------------------------------------------------------
 C_RESET=$'\033[0m'
 C_BOLD=$'\033[1m'
@@ -262,6 +269,10 @@ REPORT_WARNINGS_FILE="$REPORT_DIR/.warnings"
 REPORT_ERRORS_FILE="$REPORT_DIR/.errors"
 REPORT_WARNINGS_LOG="$REPORT_DIR/.warnings.log"
 REPORT_ERRORS_LOG="$REPORT_DIR/.errors.log"
+
+# Report helpers must always be able to write state files, even when a
+# sub-script (e.g. release-chrome.sh) is run without release.sh/build.sh first.
+mkdir -p "$REPORT_DIR"
 
 report_reset() {
 	: >"$REPORT_TARGETS_FILE"

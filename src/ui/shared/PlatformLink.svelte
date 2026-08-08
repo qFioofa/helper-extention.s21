@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { S21_PLATFORM_ORIGIN } from "@s21/api";
+	import { S21_PLATFORM_ORIGIN } from "@qfioofa/s21-api";
 
 	let {
 		path,

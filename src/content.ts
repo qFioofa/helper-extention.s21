@@ -1,5 +1,5 @@
 import { mount } from "svelte";
-import { S21Client, S21_API_PATH_PREFIX } from "@s21/api";
+import { S21Client, S21_API_PATH_PREFIX } from "@qfioofa/s21-api";
 import App from "./App.svelte";
 import { setThemeRoot } from "./core/stores/theme.svelte";
 import appCss from "./app.css?inline";
@@ -120,14 +120,33 @@ function initWidget() {
 		transition: transform 0.15s ease, background 0.15s ease;
 	`;
 	fab.style.setProperty("background", "#2563eb");
-	fab.innerHTML = `
-		<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-			stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-			<rect width="7" height="7" x="3" y="3" rx="1"/>
-			<rect width="7" height="7" x="14" y="3" rx="1"/>
-			<rect width="7" height="7" x="14" y="14" rx="1"/>
-			<rect width="7" height="7" x="3" y="14" rx="1"/>
-		</svg>`;
+	const NS = "http://www.w3.org/2000/svg";
+	const fabIcon = document.createElementNS(NS, "svg");
+	fabIcon.setAttribute("width", "22");
+	fabIcon.setAttribute("height", "22");
+	fabIcon.setAttribute("viewBox", "0 0 24 24");
+	fabIcon.setAttribute("fill", "none");
+	fabIcon.setAttribute("stroke", "currentColor");
+	fabIcon.setAttribute("stroke-width", "2");
+	fabIcon.setAttribute("stroke-linecap", "round");
+	fabIcon.setAttribute("stroke-linejoin", "round");
+	fabIcon.setAttribute("aria-hidden", "true");
+	const gridRects = [
+		{ x: "3", y: "3" },
+		{ x: "14", y: "3" },
+		{ x: "14", y: "14" },
+		{ x: "3", y: "14" },
+	];
+	for (const r of gridRects) {
+		const rect = document.createElementNS(NS, "rect");
+		rect.setAttribute("width", "7");
+		rect.setAttribute("height", "7");
+		rect.setAttribute("x", r.x);
+		rect.setAttribute("y", r.y);
+		rect.setAttribute("rx", "1");
+		fabIcon.appendChild(rect);
+	}
+	fab.appendChild(fabIcon);
 	shadow.appendChild(fab);
 
 	const panel = document.createElement("div");

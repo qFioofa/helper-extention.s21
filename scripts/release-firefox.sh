@@ -14,18 +14,26 @@ rm -rf "$STAGE"
 mkdir -p "$STAGE"
 cp -r "$ROOT/dist/." "$STAGE/"
 
+python3 "$ROOT/scripts/py/adapt_firefox_manifest.py" "$STAGE/manifest.json"
+ok "adapted manifest for Firefox (background.service_worker -> background.scripts)"
+
 python3 "$ROOT/scripts/py/inject_gecko.py" "$STAGE/manifest.json" "$GECKO_ID"
 ok "injected gecko id: $GECKO_ID"
 
 # ---- validate with web-ext lint (if available) -----------------------------
 if command -v web-ext >/dev/null 2>&1; then
 	step "firefox" "Running web-ext lint on the packaged manifest"
-	if web-ext lint --source-dir "$STAGE" >/dev/null 2>&1; then
-		ok "web-ext lint passed (no errors, no warnings)"
+	web-ext lint --source-dir "$STAGE" | tee "$STAGE/.lint.log"
+	lint_errs="$(awk '/^errors/{print $NF; exit}' "$STAGE/.lint.log" 2>/dev/null || echo 0)"
+	lint_warns="$(awk '/^warnings/{print $NF; exit}' "$STAGE/.lint.log" 2>/dev/null || echo 0)"
+	lint_errs="${lint_errs:-0}"
+	lint_warns="${lint_warns:-0}"
+	if [ "$lint_errs" -gt 0 ]; then
+		warn "web-ext lint found $lint_errs error(s)"
+		report_warn "web-ext lint: $lint_errs error(s)"
 	else
-		warn "web-ext lint reported issues; showing them:"
-		web-ext lint --source-dir "$STAGE"
-		report_warn "web-ext lint reported issues for firefox"
+		ok "web-ext lint: no errors, $lint_warns warning(s)"
+		[ "$lint_warns" -gt 0 ] && report_warn "web-ext lint: $lint_warns warning(s)"
 	fi
 else
 	warn "web-ext not found; skipping lint (install with: npm i -g web-ext)"
@@ -44,8 +52,8 @@ else
 	local_api_secret="${FIREFOX_API_SECRET:-}"
 	if [ -n "$local_api_key" ]; then
 		sign="yes"
-	else
-		printf "${C_BOLD}No Mozilla API credentials found (FIREFOX_API_KEY/FIREFOX_API_SECRET).${C_RESET}\n"
+	elif [ -t 0 ]; then
+		printf "${C_BOLD}No signing credentials found (FIREFOX_API_KEY/FIREFOX_API_SECRET).${C_RESET}\n"
 		read -rp "Sign the extension with Mozilla now? [y/N] " sign
 		sign="$(printf '%s' "${sign:-no}" | tr '[:upper:]' '[:lower:]')"
 		if [ "$sign" = "y" ]; then
@@ -55,21 +63,38 @@ else
 			read -rsp "  API secret (JWT secret): " local_api_secret
 			printf "\n"
 		fi
+	else
+		warn "no Mozilla credentials and non-interactive shell; skipping signing"
+		report_warn "firefox signing skipped (no credentials, non-interactive)"
+		sign="no"
 	fi
 
 	if [ "$sign" = "yes" ]; then
 		step "firefox" "Signing the extension with Mozilla"
 		if require web-ext "install with: npm i -g web-ext"; then
-			web-ext sign --source-dir "$STAGE" \
+			local sign_timeout="${FIREFOX_SIGN_TIMEOUT:-600}"
+			info "signing will time out after ${sign_timeout}s (set FIREFOX_SIGN_TIMEOUT to change it)"
+			if timeout "$sign_timeout" web-ext sign --source-dir "$STAGE" \
 				--artifacts-dir "$DEST/firefox" \
+				--channel unlisted \
 				--api-key "$local_api_key" \
-				--api-secret "$local_api_secret"
-			XPI="$(ls -t "$DEST/firefox"/*.xpi 2>/dev/null | head -1)"
-			if [ -n "$XPI" ]; then
-				ok "signed extension produced"
+				--api-secret "$local_api_secret"; then
+				XPI="$(ls -t "$DEST/firefox"/*.xpi 2>/dev/null | head -1)"
+				if [ -n "$XPI" ]; then
+					ok "signed extension produced"
+				else
+					warn "signing did not produce an .xpi (check the logs above)"
+					report_warn "firefox signing produced no .xpi"
+				fi
 			else
-				warn "signing did not produce an .xpi (check the logs above)"
-				report_warn "firefox signing produced no .xpi"
+				status=$?
+				if [ "$status" -eq 124 ]; then
+					warn "web-ext sign timed out after ${sign_timeout}s (waiting for Mozilla validation/approval); continuing without a signed .xpi"
+					report_warn "firefox signing timed out (FIREFOX_SIGN_TIMEOUT=${sign_timeout}s)"
+				else
+					warn "web-ext sign failed (see logs above); continuing without a signed .xpi"
+					report_error "firefox signing failed"
+				fi
 			fi
 		fi
 	else

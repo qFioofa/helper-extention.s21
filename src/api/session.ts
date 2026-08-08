@@ -1,4 +1,4 @@
-import { S21_API_BASE_URL } from "@s21/api";
+import { S21_API_BASE_URL } from "@qfioofa/s21-api";
 import { getAccessToken } from "../infra/chrome/token";
 import { backgroundClient } from "./client";
 import { logDebug, logWarn } from "../core/logger.svelte";

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { logError } from "../../../core/logger.svelte";
-	import type { CampusV1DTO, ClusterV1DTO } from "@s21/api";
-	import { S21_PLATFORM_ROUTES } from "@s21/api";
+	import type { CampusV1DTO, ClusterV1DTO } from "@qfioofa/s21-api";
+	import { S21_PLATFORM_ROUTES } from "@qfioofa/s21-api";
 	import PlatformLink from "../../shared/PlatformLink.svelte";
 
 	const MESSAGE_TIMEOUT_MS = 20_000;

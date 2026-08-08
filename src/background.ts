@@ -1,4 +1,4 @@
-import { S21HttpError, S21_PLATFORM_ORIGIN } from "@s21/api";
+import { S21HttpError, S21_PLATFORM_ORIGIN } from "@qfioofa/s21-api";
 import {
 	getAuthStatus,
 	login as loginAuth,

@@ -1,0 +1,29 @@
+@startuml structure
+skinparam {
+  BackgroundColor #0f172a
+  ComponentBackgroundColor #1e293b
+  ComponentBorderColor #334155
+  ComponentFontColor #e2e8f0
+  ComponentFontSize 13
+  PackageBackgroundColor #0f172a
+  PackageBorderColor #3b82f6
+  PackageTitleColor #93c5fd
+  ArrowColor #64748b
+  DefaultFontName Arial
+}
+
+package "src/" {
+  rectangle "core/\n(stores, registry, logger)" as core
+  rectangle "api/\n(client, session, peer)" as api
+  rectangle "infra/chrome/\n(auth, token, cookies)" as infra
+  rectangle "ui/\n(layout, islands, shared)" as ui
+  rectangle "background.ts" as bg
+  rectangle "content.ts" as ct
+}
+
+infra --> core
+api --> core
+bg --> infra
+ui --> core
+content --> api
+@enduml

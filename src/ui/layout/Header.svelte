@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { theme, toggleTheme } from "../../core/stores/theme.svelte";
 	import Icon from "../shared/Icon.svelte";
+	import { version } from "../../../package.json";
 
 	const logoUrl =
 		typeof chrome !== "undefined" && chrome.runtime?.getURL
@@ -14,7 +15,7 @@
 	<img src={logoUrl} alt="logo" class="h-7 w-7 rounded-lg" />
 	<div class="min-w-0 flex-1">
 		<h1 class="truncate text-sm font-bold leading-tight">Helper S21</h1>
-		<p class="text-[10px] leading-tight text-slate-500 dark:text-slate-400">прототип layout</p>
+		<p class="truncate text-[10px] leading-tight text-slate-500 dark:text-slate-400">v{version} · Ещё больше удобного функционала</p>
 	</div>
 	<button
 		onclick={toggleTheme}
