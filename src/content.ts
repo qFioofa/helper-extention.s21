@@ -57,7 +57,7 @@ function detectUsernameFromDom(): string | null {
 		"[data-username]",
 		"[data-testid='profile-menu'] [class*='user']",
 		".profile-menu",
-		"[class*='user-menu'] a[href*='/user/']",
+		"[class*='user-menu'] a[href*='/user/'], [class*='user-menu'] a[href*='/profile/']",
 	];
 	for (const sel of selectors) {
 		try {

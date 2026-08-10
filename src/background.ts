@@ -19,6 +19,16 @@ import { getPopupShortcut, TOGGLE_PANEL_COMMAND } from "./infra/chrome/commands"
 import { backgroundClient } from "./api/session";
 import { fetchFullProfile } from "./api/peer";
 import { logError, logInfo, logWarn } from "./core/logger.svelte";
+import {
+	fetchCourse,
+	fetchCourseProjects,
+	fetchParticipantDetails,
+	fetchProject,
+	fetchProjectCatalog,
+	type ProjectParticipantSummary,
+} from "./api/project";
+
+export type { ProjectCatalogEntry, ProjectParticipantSummary } from "./api/project";
 
 export const s21Client = backgroundClient;
 
@@ -296,6 +306,101 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 							limit: typeof limit === "number" ? limit : 20,
 						})
 						.then((data) => ({ data })),
+				)
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:projects:catalog": {
+			getAccessToken()
+				.then(() => fetchProjectCatalog().then((data) => ({ data })))
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:project:get": {
+			const projectId = Number(message?.projectId);
+			if (!Number.isFinite(projectId)) {
+				sendResponse({ error: { message: "projectId required" } });
+				return false;
+			}
+			getAccessToken()
+				.then(() => fetchProject(projectId).then((data) => ({ data })))
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:course:get": {
+			const courseId = Number(message?.courseId);
+			if (!Number.isFinite(courseId)) {
+				sendResponse({ error: { message: "courseId required" } });
+				return false;
+			}
+			getAccessToken()
+				.then(() => fetchCourse(courseId).then((data) => ({ data })))
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:course:projects": {
+			const courseId = Number(message?.courseId);
+			if (!Number.isFinite(courseId)) {
+				sendResponse({ error: { message: "courseId required" } });
+				return false;
+			}
+			getAccessToken()
+				.then(() => fetchCourseProjects(courseId).then((data) => ({ data })))
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "api:project:participants": {
+			const projectId = Number(message?.projectId);
+			const status = message?.status;
+			const limit = Number(message?.limit) || 50;
+			const offset = Number(message?.offset) || 0;
+			if (!Number.isFinite(projectId) || typeof status !== "string" || !status.trim()) {
+				sendResponse({ error: { message: "projectId and status required" } });
+				return false;
+			}
+			getAccessToken()
+				.then(() =>
+					backgroundClient.project
+						.getParticipants(projectId, {
+							status: status as import("@qfioofa/s21-api").ProjectStatus,
+							limit,
+							offset,
+						})
+						.then(({ participants }) => ({ data: { logins: participants ?? [] } })),
+				)
+				.then((r) => sendResponse(r))
+				.catch((err) => sendResponse({ error: errPayload(err) }));
+			return true;
+		}
+		case "tab:active-url": {
+			chrome.tabs
+				.query({ active: true, lastFocusedWindow: true })
+				.then((tabs) => {
+					const tab = tabs.find((t) => t.id != null && t.url);
+					sendResponse({ url: tab?.url ?? null });
+				})
+				.catch((err) => {
+					logWarn(`tab:active-url: ${err}`, "background");
+					sendResponse({ url: null });
+				});
+			return true;
+		}
+		case "api:project:participant-details": {
+			const logins = message?.logins;
+			if (!Array.isArray(logins) || !logins.length) {
+				sendResponse({ error: { message: "logins required" } });
+				return false;
+			}
+			getAccessToken()
+				.then(() =>
+					fetchParticipantDetails(
+						logins.filter((l): l is string => typeof l === "string"),
+					).then((data) => ({ data: data as (ProjectParticipantSummary | null)[] })),
 				)
 				.then((r) => sendResponse(r))
 				.catch((err) => sendResponse({ error: errPayload(err) }));
