@@ -3,6 +3,7 @@
 	import { logError, logInfo } from "../../../core/logger.svelte";
 	import type { FullProfile } from "../../../api/peer";
 	import ProfileView from "./ProfileView.svelte";
+	import { peerSearchRequest } from "../../../core/stores/peerSearch.svelte";
 
 	const MESSAGE_TIMEOUT_MS = 15_000;
 
@@ -14,6 +15,19 @@
 
 	let query = $state("");
 	let lookup = $state<LookupState>({ kind: "idle" });
+
+	let handledNonce = 0;
+
+	// Внешний запрос (например, из поиска по проектам): переключаемся на поиск пира
+	// и сразу выполняем поиск по логину.
+	$effect(() => {
+		const req = peerSearchRequest;
+		if (req.nonce > handledNonce && req.login) {
+			handledNonce = req.nonce;
+			query = req.login;
+			void search();
+		}
+	});
 
 	const isChromeExt = typeof chrome !== "undefined" && !!chrome.runtime?.id;
 
@@ -98,7 +112,9 @@
 {#if lookup.kind === "loading"}
 	<p class="mt-3 animate-pulse text-xs text-slate-400">Загружаем…</p>
 {:else if lookup.kind === "error"}
-	<p class="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-600 dark:bg-rose-950/40 dark:text-rose-300">
+	<p
+		class="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
+	>
 		{lookup.message}
 	</p>
 {:else if lookup.kind === "done"}

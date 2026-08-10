@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ParticipantProjectV1DTO } from "@qfioofa/s21-api";
-	import { S21_PLATFORM_ORIGIN, S21_PLATFORM_ROUTES } from "@qfioofa/s21-api";
+	import { S21_PLATFORM_ORIGIN } from "@qfioofa/s21-api";
 	import { PROJECT_STATUS_LABEL } from "../../../api/peer";
 	import type { BootcampCourse, FullProfile } from "../../../api/peer";
 	import ProjectLink from "../../shared/ProjectLink.svelte";
@@ -70,7 +70,7 @@
 		</div>
 		<div class="min-w-0 flex-1">
 			<a
-				href={`${S21_PLATFORM_ORIGIN}${S21_PLATFORM_ROUTES.user(p.login)}`}
+				href={`${S21_PLATFORM_ORIGIN}/profile/${encodeURIComponent(p.login)}`}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="truncate text-sm font-bold text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"

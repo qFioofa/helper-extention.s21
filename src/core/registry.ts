@@ -9,6 +9,7 @@ import CookiesPanel from "../ui/islands/features/CookiesPanel.svelte";
 import CampusPanel from "../ui/islands/features/CampusPanel.svelte";
 import SalesPanel from "../ui/islands/features/SalesPanel.svelte";
 import EventsPanel from "../ui/islands/features/EventsPanel.svelte";
+import ProjectSearchPanel from "../ui/islands/features/ProjectSearchPanel.svelte";
 
 export type IslandDef = {
 	id: string;
@@ -48,6 +49,14 @@ export const categories: CategoryDef[] = [
 		title: "Поиск",
 		icon: "search",
 		islands: [{ id: "search", title: "Поиск участника", component: SearchPanel }],
+	},
+	{
+		id: "projects",
+		title: "Проекты",
+		icon: "folder",
+		islands: [
+			{ id: "project-search", title: "Поиск по проекту", component: ProjectSearchPanel },
+		],
 	},
 	{
 		id: "logs",
