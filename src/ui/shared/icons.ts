@@ -94,6 +94,11 @@ export const icons: Record<string, SvgNode[]> = {
 		n("polyline", { points: "4 17 10 11 4 5" }),
 		n("line", { x1: "12", x2: "20", y1: "19", y2: "19" }),
 	],
+	graduation: [
+		n("path", { d: "M22 10 12 5 2 10l10 5 10-5Z" }),
+		n("path", { d: "M6 12.5V17c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7v-4.5" }),
+		n("path", { d: "M22 10v6" }),
+	],
 	keyboard: [
 		n("rect", { width: "20", height: "16", x: "2", y: "4", rx: "2" }),
 		n("path", { d: "M6 8h.001" }),
